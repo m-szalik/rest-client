@@ -5,6 +5,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 
@@ -51,6 +52,10 @@ public interface RestClient extends AutoCloseable {
 
     default RestClientResponse put(String url, String data) throws IOException {
         return put(url, null, data);
+    }
+
+    static NameValuePair param(String name, Object value) {
+        return new BasicNameValuePair(name, value == null ? null : value.toString());
     }
 
 }
