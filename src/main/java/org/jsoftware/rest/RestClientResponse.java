@@ -14,7 +14,7 @@ import java.io.Serializable;
 /**
  * @author szalik
  */
-public interface ClientResponse extends Serializable {
+public interface RestClientResponse extends Serializable {
 
     Header[] getAllHeaders();
 

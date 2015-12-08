@@ -1,6 +1,6 @@
 package org.jsoftware.rest.plugins;
 
-import org.jsoftware.rest.ClientResponse;
+import org.jsoftware.rest.RestClientResponse;
 import org.jsoftware.rest.HttpClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +28,11 @@ public class GetMethodCachePlugin implements HttpClientPlugin {
             long now = System.currentTimeMillis();
             if (ce == null || ce.getTimeout() < now) {
                 chain.continueChain();
-                ClientResponse clientResponse = context.getResponse();
-                if (clientResponse == null) {
+                RestClientResponse restClientResponse = context.getResponse();
+                if (restClientResponse == null) {
                     throw new IllegalStateException("Http Response is null for " + context.getRequest());
                 }
-                cache.put(key, new CacheEntry(now+timeoutMillis, clientResponse));
+                cache.put(key, new CacheEntry(now+timeoutMillis, restClientResponse));
                 logger.trace("Response for {} put into cache.", context.getRequest());
             } else {
                 logger.trace("Response for {} fetched from cache.", context.getRequest());
@@ -59,9 +59,9 @@ class MyLRUCache<K, V> extends LinkedHashMap<K, V> {
 
 class CacheEntry implements Serializable {
     private final long timeout;
-    private final ClientResponse response;
+    private final RestClientResponse response;
 
-    CacheEntry(long timeout, ClientResponse response) {
+    CacheEntry(long timeout, RestClientResponse response) {
         this.timeout = timeout;
         this.response = response;
     }
@@ -70,7 +70,7 @@ class CacheEntry implements Serializable {
         return timeout;
     }
 
-    public ClientResponse getResponse() {
+    public RestClientResponse getResponse() {
         return response;
     }
 }

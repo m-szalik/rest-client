@@ -9,9 +9,9 @@ public interface HttpClientPlugin {
 
     interface PluginContext {
         HttpRequestBase getRequest();
-        ClientResponse getResponse();
+        RestClientResponse getResponse();
         void setRequest(HttpRequestBase request);
-        void setResponse(ClientResponse response);
+        void setResponse(RestClientResponse response);
     }
 
     interface PluginChain {

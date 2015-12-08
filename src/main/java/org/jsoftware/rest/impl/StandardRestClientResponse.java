@@ -8,7 +8,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
-import org.jsoftware.rest.ClientResponse;
+import org.jsoftware.rest.RestClientResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -26,13 +26,13 @@ import java.io.StringReader;
 /**
  * @author szalik
  */
-class StandardClientResponse implements ClientResponse {
+class StandardRestClientResponse implements RestClientResponse {
     private final HttpResponse httpResponse;
     private String content;
     private DocumentContext json;
     private Document xmlDocument;
 
-    StandardClientResponse(HttpResponse httpResponse) {
+    StandardRestClientResponse(HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 

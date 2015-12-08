@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.jsoftware.rest.ClientResponse;
+import org.jsoftware.rest.RestClientResponse;
 import org.jsoftware.rest.HttpClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class VerbosePlugin implements HttpClientPlugin {
         }
         try {
             chain.continueChain();
-            ClientResponse response = context.getResponse();
+            RestClientResponse response = context.getResponse();
             s.append("< ").append(response.getStatusLine()).append("\n< ").append(response.getContent());
             logger.info(s.toString());
         } catch (Exception ex) {

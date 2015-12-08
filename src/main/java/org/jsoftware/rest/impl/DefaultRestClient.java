@@ -23,13 +23,13 @@ import java.util.function.Function;
 /**
  * @author szalik
  */
-public class DefaultHttpClient implements HttpClient {
+public class DefaultRestClient implements RestClient {
     private CloseableHttpClient httpClient;
     private HttpClientContext httpClientContext;
     private HttpClientPlugin[] plugins = new HttpClientPlugin[0];
 
 
-    public DefaultHttpClient(HttpClientFeature[] features) {
+    public DefaultRestClient(HttpClientFeature[] features) {
         httpClient = HttpClients.createDefault();
         httpClientContext = HttpClientContext.create();
         Set<HttpClientFeature> f = new HashSet<>(Arrays.asList(features));
@@ -38,7 +38,7 @@ public class DefaultHttpClient implements HttpClient {
         }
     }
 
-    public DefaultHttpClient() {
+    public DefaultRestClient() {
         this(new HttpClientFeature[0]);
     }
 
@@ -54,7 +54,7 @@ public class DefaultHttpClient implements HttpClient {
         return copy;
     }
 
-    public ClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException {
+    public RestClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException {
         return doCall(url, u-> {
             HttpGet x = new HttpGet(u + args(parameters));
             if (customizer != null) {
@@ -64,15 +64,15 @@ public class DefaultHttpClient implements HttpClient {
         });
     }
 
-    public ClientResponse post(String url, RequestCustomizer<HttpPost> customizer,NameValuePair... parameters) throws IOException {
+    public RestClientResponse post(String url, RequestCustomizer<HttpPost> customizer,NameValuePair... parameters) throws IOException {
         return doCall(url, u-> prepare(new HttpPost(u), customizer, parameters));
     }
 
-    public ClientResponse put(String url, RequestCustomizer<HttpPut> customizer, NameValuePair... parameters) throws IOException {
+    public RestClientResponse put(String url, RequestCustomizer<HttpPut> customizer, NameValuePair... parameters) throws IOException {
         return doCall(url, u-> prepare(new HttpPut(url), customizer, parameters));
     }
 
-    public ClientResponse delete(String url, RequestCustomizer<HttpDelete> customizer, NameValuePair... parameters) throws IOException {
+    public RestClientResponse delete(String url, RequestCustomizer<HttpDelete> customizer, NameValuePair... parameters) throws IOException {
         return doCall(url, u-> {
             HttpDelete x = new HttpDelete(u + args(parameters));
             if (customizer != null) {
@@ -83,12 +83,12 @@ public class DefaultHttpClient implements HttpClient {
     }
 
     @Override
-    public ClientResponse post(String url, RequestCustomizer<HttpPost> customizer, String data) throws IOException {
+    public RestClientResponse post(String url, RequestCustomizer<HttpPost> customizer, String data) throws IOException {
         return doCall(url, u-> prepare(new HttpPost(u), customizer, data));
     }
 
     @Override
-    public ClientResponse put(String url, RequestCustomizer<HttpPut> customizer, String data) throws IOException {
+    public RestClientResponse put(String url, RequestCustomizer<HttpPut> customizer, String data) throws IOException {
         return doCall(url, u-> prepare(new HttpPut(u), customizer, data));
     }
 
@@ -133,14 +133,14 @@ public class DefaultHttpClient implements HttpClient {
         return s;
     }
 
-    private ClientResponse doCall(String url, Function<String,HttpRequestBase> method) throws IOException {
+    private RestClientResponse doCall(String url, Function<String,HttpRequestBase> method) throws IOException {
         url = prepareURL(url);
         HttpRequestBase methodToExecute = method.apply(url);
         PluginContextImpl ctx = new PluginContextImpl();
         ctx.setRequest(methodToExecute);
         InvocationChain chain = InvocationChain.create(plugins, ctx, () -> {
             HttpResponse response = httpClient.execute(methodToExecute, httpClientContext);
-            ClientResponse cr = new StandardClientResponse(response);
+            RestClientResponse cr = new StandardRestClientResponse(response);
             ctx.setResponse(cr);
             return ctx;
         });
@@ -202,7 +202,7 @@ class InvocationChain implements HttpClientPlugin.PluginChain {
 
 class PluginContextImpl implements HttpClientPlugin.PluginContext {
     private HttpRequestBase request;
-    private ClientResponse response;
+    private RestClientResponse response;
 
     @Override
     public HttpRequestBase getRequest() {
@@ -215,7 +215,7 @@ class PluginContextImpl implements HttpClientPlugin.PluginContext {
     }
 
     @Override
-    public ClientResponse getResponse() {
+    public RestClientResponse getResponse() {
         if (response == null) {
             throw new IllegalStateException("Request wasn't submitted yet!");
         }
@@ -223,7 +223,7 @@ class PluginContextImpl implements HttpClientPlugin.PluginContext {
     }
 
     @Override
-    public void setResponse(ClientResponse response) {
+    public void setResponse(RestClientResponse response) {
         this.response = response;
     }
 }
