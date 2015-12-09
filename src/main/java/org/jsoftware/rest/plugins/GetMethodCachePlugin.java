@@ -14,10 +14,15 @@ import java.util.Map;
 public class GetMethodCachePlugin implements HttpClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final long timeoutMillis;
-    private final MyLRUCache<String,CacheEntry> cache = new MyLRUCache<>(128);
+    private final MyLRUCache<String,CacheEntry> cache;
+
+    public GetMethodCachePlugin(long timeoutMillis, int size) {
+        this.timeoutMillis = timeoutMillis;
+        this.cache = new MyLRUCache<>(size);
+    }
 
     public GetMethodCachePlugin(long timeoutMillis) {
-        this.timeoutMillis = timeoutMillis;
+        this(timeoutMillis, 128);
     }
 
     @Override
