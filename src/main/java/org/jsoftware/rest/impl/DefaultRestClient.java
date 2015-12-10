@@ -30,6 +30,10 @@ public class DefaultRestClient implements RestClient {
 
 
     public DefaultRestClient(HttpClientFeature[] features) {
+        this(features, new HttpClientPlugin[0]);
+    }
+
+    public DefaultRestClient(HttpClientFeature[] features, HttpClientPlugin... plugins) {
         httpClient = HttpClients.createDefault();
         httpClientContext = HttpClientContext.create();
         Set<HttpClientFeature> f = new HashSet<>(Arrays.asList(features));
@@ -43,15 +47,17 @@ public class DefaultRestClient implements RestClient {
     }
 
     @Override
-    public final void setPlugins(HttpClientPlugin... plugins) {
-        this.plugins = plugins == null ? new HttpClientPlugin[0] : plugins;
+    public final void setPlugins(List<HttpClientPlugin> plugins) {
+        this.plugins = plugins == null ? new HttpClientPlugin[0] : plugins.toArray(new HttpClientPlugin[plugins.size()]);
     }
 
     @Override
-    public HttpClientPlugin[] getPlugins() {
-        HttpClientPlugin[] copy = new HttpClientPlugin[plugins.length];
-        System.arraycopy(plugins, 0, copy, 0, plugins.length);
-        return copy;
+    public List<HttpClientPlugin> getPlugins() {
+        List<HttpClientPlugin> list = new LinkedList<>();
+        for(HttpClientPlugin plugin : plugins) {
+            list.add(plugin);
+        }
+        return Collections.unmodifiableList(list);
     }
 
     public RestClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException {

@@ -8,15 +8,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author szalik
   */
 public interface RestClient extends AutoCloseable {
 
-    void setPlugins(HttpClientPlugin... plugins);
+    void setPlugins(List<HttpClientPlugin> plugins);
 
-    HttpClientPlugin[] getPlugins();
+    List<HttpClientPlugin> getPlugins();
 
     RestClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException;
 
