@@ -5,13 +5,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.jsoftware.rest.RestClientResponse;
-import org.jsoftware.rest.HttpClientPlugin;
+import org.jsoftware.rest.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  */
-public class VerbosePlugin implements HttpClientPlugin {
+public class VerbosePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

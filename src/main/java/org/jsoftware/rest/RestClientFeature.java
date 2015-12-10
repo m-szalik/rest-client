@@ -2,6 +2,6 @@ package org.jsoftware.rest;
 
 /**
  */
-public enum HttpClientFeature {
+public enum RestClientFeature {
     ENABLE_COOKIES
 }

@@ -26,35 +26,35 @@ import java.util.function.Function;
 public class DefaultRestClient implements RestClient {
     private CloseableHttpClient httpClient;
     private HttpClientContext httpClientContext;
-    private HttpClientPlugin[] plugins = new HttpClientPlugin[0];
+    private RestClientPlugin[] plugins = new RestClientPlugin[0];
 
 
-    public DefaultRestClient(HttpClientFeature[] features) {
-        this(features, new HttpClientPlugin[0]);
+    public DefaultRestClient(RestClientFeature[] features) {
+        this(features, new RestClientPlugin[0]);
     }
 
-    public DefaultRestClient(HttpClientFeature[] features, HttpClientPlugin... plugins) {
+    public DefaultRestClient(RestClientFeature[] features, RestClientPlugin... plugins) {
         httpClient = HttpClients.createDefault();
         httpClientContext = HttpClientContext.create();
-        Set<HttpClientFeature> f = new HashSet<>(Arrays.asList(features));
-        if (f.contains(HttpClientFeature.ENABLE_COOKIES)) {
+        Set<RestClientFeature> f = new HashSet<>(Arrays.asList(features));
+        if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
     }
 
     public DefaultRestClient() {
-        this(new HttpClientFeature[0]);
+        this(new RestClientFeature[0]);
     }
 
     @Override
-    public final void setPlugins(List<HttpClientPlugin> plugins) {
-        this.plugins = plugins == null ? new HttpClientPlugin[0] : plugins.toArray(new HttpClientPlugin[plugins.size()]);
+    public final void setPlugins(List<RestClientPlugin> plugins) {
+        this.plugins = plugins == null ? new RestClientPlugin[0] : plugins.toArray(new RestClientPlugin[plugins.size()]);
     }
 
     @Override
-    public List<HttpClientPlugin> getPlugins() {
-        List<HttpClientPlugin> list = new LinkedList<>();
-        for(HttpClientPlugin plugin : plugins) {
+    public List<RestClientPlugin> getPlugins() {
+        List<RestClientPlugin> list = new LinkedList<>();
+        for(RestClientPlugin plugin : plugins) {
             list.add(plugin);
         }
         return Collections.unmodifiableList(list);
@@ -180,7 +180,7 @@ public class DefaultRestClient implements RestClient {
 
 }
 
-class InvocationChain implements HttpClientPlugin.PluginChain {
+class InvocationChain implements RestClientPlugin.PluginChain {
     final Callable operation;
 
     InvocationChain(Callable operation) {
@@ -192,7 +192,7 @@ class InvocationChain implements HttpClientPlugin.PluginChain {
         operation.call();
     }
 
-    public static InvocationChain create(HttpClientPlugin[] plugins, HttpClientPlugin.PluginContext ctx, Callable dispatcher) {
+    public static InvocationChain create(RestClientPlugin[] plugins, RestClientPlugin.PluginContext ctx, Callable dispatcher) {
         InvocationChain last = new InvocationChain(dispatcher);
         for(int i=plugins.length -1; i>=0; i--) {
             final int j = i;
@@ -206,7 +206,7 @@ class InvocationChain implements HttpClientPlugin.PluginChain {
     }
 }
 
-class PluginContextImpl implements HttpClientPlugin.PluginContext {
+class PluginContextImpl implements RestClientPlugin.PluginContext {
     private HttpRequestBase request;
     private RestClientResponse response;
 

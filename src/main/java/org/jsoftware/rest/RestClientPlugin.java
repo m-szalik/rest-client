@@ -5,7 +5,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 /**
  * @author szalik
  */
-public interface HttpClientPlugin {
+public interface RestClientPlugin {
 
     interface PluginContext {
         HttpRequestBase getRequest();

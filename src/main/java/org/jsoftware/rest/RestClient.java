@@ -15,9 +15,9 @@ import java.util.List;
   */
 public interface RestClient extends AutoCloseable {
 
-    void setPlugins(List<HttpClientPlugin> plugins);
+    void setPlugins(List<RestClientPlugin> plugins);
 
-    List<HttpClientPlugin> getPlugins();
+    List<RestClientPlugin> getPlugins();
 
     RestClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException;
 

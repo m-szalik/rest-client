@@ -1,7 +1,7 @@
 package org.jsoftware.rest.plugins;
 
 import org.jsoftware.rest.RestClientResponse;
-import org.jsoftware.rest.HttpClientPlugin;
+import org.jsoftware.rest.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  */
-public class GetMethodCachePlugin implements HttpClientPlugin {
+public class GetMethodCachePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final long timeoutMillis;
     private final MyLRUCache<String,CacheEntry> cache;

@@ -1,11 +1,11 @@
 package org.jsoftware.rest.plugins;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoftware.rest.HttpClientPlugin;
+import org.jsoftware.rest.RestClientPlugin;
 
 /**
  */
-public class AuthPlugin implements HttpClientPlugin {
+public class AuthPlugin implements RestClientPlugin {
     private String token;
 
     public AuthPlugin() {
