@@ -19,6 +19,9 @@ public class AuthPlugin implements RestClientPlugin {
     public void setToken(String token) {
         this.token = token;
     }
+    public void clearToken() {
+        this.token = null;
+    }
 
     @Override
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
