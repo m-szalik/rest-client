@@ -13,6 +13,9 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 /**
+ * Display request and response content.
+ * <p>Use static factory method to obtain an instance.</p>
+ * @author szalik
  */
 public class VerbosePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -65,15 +68,24 @@ public class VerbosePlugin implements RestClientPlugin {
         }
     }
 
+    /**
+     * Instance that sends output to console
+     */
     public static VerbosePlugin consoleOutputOnly() {
         return new VerbosePlugin(true, false);
     }
 
+    /**
+     * Instance that sends output to logs
+     */
     public static VerbosePlugin logsOutputOnly() {
         return new VerbosePlugin(false, true);
     }
 
-    public static VerbosePlugin consoleAndLogs() {
+    /**
+     * Instance that sends output to console and logs
+     */
+    public static VerbosePlugin consoleAndLogsOutput() {
         return new VerbosePlugin(true, true);
     }
 }

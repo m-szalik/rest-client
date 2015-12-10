@@ -10,17 +10,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Cache get methods
+ * @author szalik
  */
 public class GetMethodCachePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final long timeoutMillis;
     private final MyLRUCache<String,CacheEntry> cache;
 
+    /**
+     * @param timeoutMillis cache ttl im milliseconds
+     * @param size cache size
+     */
     public GetMethodCachePlugin(long timeoutMillis, int size) {
         this.timeoutMillis = timeoutMillis;
         this.cache = new MyLRUCache<>(size);
     }
 
+    /**
+     * Create cache with default size 128 entries
+     * @param timeoutMillis cache ttl im milliseconds
+     */
     public GetMethodCachePlugin(long timeoutMillis) {
         this(timeoutMillis, 128);
     }

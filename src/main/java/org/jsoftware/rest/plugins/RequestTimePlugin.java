@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Log response time.
+ * @author szalik
  */
 public class RequestTimePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());

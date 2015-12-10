@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoftware.rest.RestClientPlugin;
 
 /**
+ * Add <code>Authorization</code> header with value <code>Bearer <i>token</i></code>
+ * @author szalik
  */
 public class AuthPlugin implements RestClientPlugin {
     private String token;
@@ -19,6 +21,7 @@ public class AuthPlugin implements RestClientPlugin {
     public void setToken(String token) {
         this.token = token;
     }
+
     public void clearToken() {
         this.token = null;
     }
