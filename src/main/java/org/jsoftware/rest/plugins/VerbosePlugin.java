@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by mgruszecki on 02.12.15.
  */
 public class VerbosePlugin implements HttpClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
