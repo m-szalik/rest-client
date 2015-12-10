@@ -9,10 +9,20 @@ import org.jsoftware.rest.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 /**
  */
 public class VerbosePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final boolean consoleOutput, logsOutput;
+
+    private VerbosePlugin(boolean consoleOutput, boolean logsOutput) {
+        this.consoleOutput = consoleOutput;
+        this.logsOutput = logsOutput;
+        logger.debug("Creating {} with consoleOutput={}, logsOutput={}", getClass(), consoleOutput, logsOutput);
+    }
 
     @Override
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
@@ -30,11 +40,40 @@ public class VerbosePlugin implements RestClientPlugin {
             chain.continueChain();
             RestClientResponse response = context.getResponse();
             s.append("< ").append(response.getStatusLine()).append("\n< ").append(response.getContent());
-            logger.info(s.toString());
+            int code = response.getStatusLine().getStatusCode();
+            boolean error = code >= 400;
+            print(s, error);
         } catch (Exception ex) {
             s.append("* ").append(ex);
-            logger.error(s.toString());
+            print(s, true);
             throw ex;
         }
+    }
+
+    private void print(StringBuilder output, boolean error) {
+        if (consoleOutput) {
+            PrintStream ps = error ? System.err : System.out;
+            ps.println(output.toString());
+            ps.flush();
+        }
+        if (logsOutput) {
+            if (error) {
+                logger.warn(output.toString());
+            } else {
+                logger.info(output.toString());
+            }
+        }
+    }
+
+    public static VerbosePlugin consoleOutputOnly() {
+        return new VerbosePlugin(true, false);
+    }
+
+    public static VerbosePlugin logsOutputOnly() {
+        return new VerbosePlugin(false, true);
+    }
+
+    public static VerbosePlugin consoleAndLogs() {
+        return new VerbosePlugin(true, true);
     }
 }
