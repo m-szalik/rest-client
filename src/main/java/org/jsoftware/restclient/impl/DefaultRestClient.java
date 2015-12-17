@@ -124,12 +124,18 @@ public class DefaultRestClient implements RestClient {
 
 
     abstract class AbstractRestClientCall<C extends BaseRestClientCall,M extends HttpRequestBase> implements BaseRestClientCall<C> {
-        private final Map<String,String[]> parameters = new HashMap<>();
+        private final Map<String,String[]> parameters = new LinkedHashMap<>();
         protected final M method;
 
         protected AbstractRestClientCall(String url, M method) throws MalformedURLException {
-            new URL(url);
             this.method = method;
+            try {
+                this.method.setURI(new URL(url).toURI());
+            } catch (URISyntaxException e) {
+                MalformedURLException mex = new MalformedURLException("Invalid url '" + url + "'");
+                mex.initCause(e);
+                throw mex;
+            }
         }
 
         @Override
