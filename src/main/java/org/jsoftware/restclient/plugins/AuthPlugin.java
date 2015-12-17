@@ -1,7 +1,7 @@
-package org.jsoftware.rest.plugins;
+package org.jsoftware.restclient.plugins;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoftware.rest.RestClientPlugin;
+import org.jsoftware.restclient.RestClientPlugin;
 
 /**
  * Add <code>Authorization</code> header with value <code>Bearer <i>token</i></code>

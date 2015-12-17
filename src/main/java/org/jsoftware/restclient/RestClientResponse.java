@@ -1,4 +1,4 @@
-package org.jsoftware.rest;
+package org.jsoftware.restclient;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;

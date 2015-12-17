@@ -1,16 +1,15 @@
-package org.jsoftware.rest.plugins;
+package org.jsoftware.restclient.plugins;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.jsoftware.rest.RestClientResponse;
-import org.jsoftware.rest.RestClientPlugin;
+import org.jsoftware.restclient.RestClientResponse;
+import org.jsoftware.restclient.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
-import java.io.PrintWriter;
 
 /**
  * Display request and response content.

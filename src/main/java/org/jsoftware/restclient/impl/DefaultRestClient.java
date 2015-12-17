@@ -1,19 +1,19 @@
-package org.jsoftware.rest.impl;
+package org.jsoftware.restclient.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.jsoftware.rest.*;
+import org.jsoftware.restclient.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -60,45 +60,39 @@ public class DefaultRestClient implements RestClient {
         return Collections.unmodifiableList(list);
     }
 
-    public RestClientResponse get(String url, RequestCustomizer<HttpGet> customizer, NameValuePair... parameters) throws IOException {
+    public RestClientResponse get(String url, NameValuePair... parameters) throws IOException {
         return doCall(url, u-> {
             HttpGet x = new HttpGet(u + args(parameters));
-            if (customizer != null) {
-                customizer.customize(x);
-            }
             return x;
         });
     }
 
-    public RestClientResponse post(String url, RequestCustomizer<HttpPost> customizer,NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> prepare(new HttpPost(u), customizer, parameters));
+    public RestClientResponse post(String url, NameValuePair... parameters) throws IOException {
+        return doCall(url, u-> prepare(new HttpPost(u), parameters));
     }
 
-    public RestClientResponse put(String url, RequestCustomizer<HttpPut> customizer, NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> prepare(new HttpPut(url), customizer, parameters));
+    public RestClientResponse put(String url, NameValuePair... parameters) throws IOException {
+        return doCall(url, u-> prepare(new HttpPut(url), parameters));
     }
 
-    public RestClientResponse delete(String url, RequestCustomizer<HttpDelete> customizer, NameValuePair... parameters) throws IOException {
+    public RestClientResponse delete(String url, NameValuePair... parameters) throws IOException {
         return doCall(url, u-> {
             HttpDelete x = new HttpDelete(u + args(parameters));
-            if (customizer != null) {
-                customizer.customize(x);
-            }
             return x;
         });
     }
 
     @Override
-    public RestClientResponse post(String url, RequestCustomizer<HttpPost> customizer, String data) throws IOException {
-        return doCall(url, u-> prepare(new HttpPost(u), customizer, data));
+    public RestClientResponse post(String url, InputStream is, ContentType contentType) throws IOException {
+        return doCall(url, u-> prepare(new HttpPost(u), is, contentType));
     }
 
     @Override
-    public RestClientResponse put(String url, RequestCustomizer<HttpPut> customizer, String data) throws IOException {
-        return doCall(url, u-> prepare(new HttpPut(u), customizer, data));
+    public RestClientResponse put(String url, InputStream is, ContentType contentType) throws IOException {
+        return doCall(url, u-> prepare(new HttpPut(u), is, contentType));
     }
 
-    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, RequestCustomizer<M> customizer, NameValuePair... parameters) {
+    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, NameValuePair... parameters) {
         try {
             if (parameters != null && parameters.length > 0) {
                 m.setEntity(new UrlEncodedFormEntity(Arrays.asList(parameters), "UTF-8"));
@@ -106,18 +100,12 @@ public class DefaultRestClient implements RestClient {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        if (customizer != null) {
-            customizer.customize(m);
-        }
         return m;
     }
 
-    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, RequestCustomizer<M> customizer, String data) {
-        if (StringUtils.isNotBlank(data)) {
-            m.setEntity(new StringEntity(data, ContentType.APPLICATION_JSON));
-        }
-        if (customizer != null) {
-            customizer.customize(m);
+    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, InputStream dataInputStream, ContentType contentType) {
+        if (dataInputStream != null) {
+            m.setEntity(new InputStreamEntity(dataInputStream, contentType));
         }
         return m;
     }

@@ -1,4 +1,4 @@
-package org.jsoftware.rest.impl;
+package org.jsoftware.restclient.impl;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -8,7 +8,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
-import org.jsoftware.rest.RestClientResponse;
+import org.jsoftware.restclient.RestClientResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

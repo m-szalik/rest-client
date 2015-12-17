@@ -1,4 +1,4 @@
-package org.jsoftware.rest;
+package org.jsoftware.restclient;
 
 /**
  */
