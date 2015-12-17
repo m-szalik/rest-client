@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -18,12 +19,18 @@ import java.io.PrintStream;
  */
 public class VerbosePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final boolean consoleOutput, logsOutput;
+    private final PrintStream[] output;
+    private final boolean logsOutput;
 
-    private VerbosePlugin(boolean consoleOutput, boolean logsOutput) {
-        this.consoleOutput = consoleOutput;
+    /**
+     * Create plgin instance
+     * @param logsOutput it true output goes to slf4j logs
+     * @param outputs array of PrintStreams to send output there
+     */
+    public VerbosePlugin(boolean logsOutput, PrintStream... outputs) {
+        this.output = outputs == null ? new PrintStream[0] : outputs;
         this.logsOutput = logsOutput;
-        logger.debug("Creating {} with consoleOutput={}, logsOutput={}", getClass(), consoleOutput, logsOutput);
+        logger.debug("Creating {} with logsOutput={} and {}", getClass(), logsOutput, StringUtils.join(this.output, ','));
     }
 
     @Override
@@ -53,8 +60,7 @@ public class VerbosePlugin implements RestClientPlugin {
     }
 
     private void print(StringBuilder output, boolean error) {
-        if (consoleOutput) {
-            PrintStream ps = error ? System.err : System.out;
+        for (PrintStream ps : this.output) {
             ps.println(output.toString());
             ps.flush();
         }
@@ -67,24 +73,4 @@ public class VerbosePlugin implements RestClientPlugin {
         }
     }
 
-    /**
-     * Instance that sends output to console
-     */
-    public static VerbosePlugin consoleOutputOnly() {
-        return new VerbosePlugin(true, false);
-    }
-
-    /**
-     * Instance that sends output to logs
-     */
-    public static VerbosePlugin logsOutputOnly() {
-        return new VerbosePlugin(false, true);
-    }
-
-    /**
-     * Instance that sends output to console and logs
-     */
-    public static VerbosePlugin consoleAndLogsOutput() {
-        return new VerbosePlugin(true, true);
-    }
 }
