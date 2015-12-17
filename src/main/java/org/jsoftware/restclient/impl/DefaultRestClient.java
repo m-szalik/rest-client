@@ -190,6 +190,7 @@ public class DefaultRestClient implements RestClient {
         private Charset charset;
         RestClientDataCallImpl(String url, M method) throws MalformedURLException {
             super(url, method);
+            charset = Charset.forName("UTF-8");
         }
 
         @Override
@@ -201,7 +202,7 @@ public class DefaultRestClient implements RestClient {
                     list.add(new BasicNameValuePair(name, val));
                 }
             }
-            method.setEntity(new UrlEncodedFormEntity(list, "UTF-8"));
+            method.setEntity(new UrlEncodedFormEntity(list, charset));
         }
 
         @Override
