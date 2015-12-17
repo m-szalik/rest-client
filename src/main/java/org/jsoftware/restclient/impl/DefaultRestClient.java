@@ -1,24 +1,27 @@
 package org.jsoftware.restclient.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.jsoftware.restclient.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.*;
+import java.nio.charset.Charset;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 /**
  * @author szalik
@@ -60,90 +63,34 @@ public class DefaultRestClient implements RestClient {
         return Collections.unmodifiableList(list);
     }
 
-    public RestClientResponse get(String url, NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> {
-            HttpGet x = new HttpGet(u + args(parameters));
-            return x;
-        });
-    }
-
-    public RestClientResponse post(String url, NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> prepare(new HttpPost(u), parameters));
-    }
-
-    public RestClientResponse put(String url, NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> prepare(new HttpPut(url), parameters));
-    }
-
-    public RestClientResponse delete(String url, NameValuePair... parameters) throws IOException {
-        return doCall(url, u-> {
-            HttpDelete x = new HttpDelete(u + args(parameters));
-            return x;
-        });
+    @Override
+    public RestClientCall get(String url) throws MalformedURLException {
+        return new RestClientCallImpl<>(url, new HttpGet());
     }
 
     @Override
-    public RestClientResponse post(String url, InputStream is, ContentType contentType) throws IOException {
-        return doCall(url, u-> prepare(new HttpPost(u), is, contentType));
+    public RestClientCall delete(String url) throws MalformedURLException {
+        return new RestClientCallImpl<>(url, new HttpDelete());
     }
 
     @Override
-    public RestClientResponse put(String url, InputStream is, ContentType contentType) throws IOException {
-        return doCall(url, u-> prepare(new HttpPut(u), is, contentType));
+    public RestClientCall head(String url) throws MalformedURLException {
+        return new RestClientCallImpl<>(url, new HttpHead());
     }
 
-    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, NameValuePair... parameters) {
-        try {
-            if (parameters != null && parameters.length > 0) {
-                m.setEntity(new UrlEncodedFormEntity(Arrays.asList(parameters), "UTF-8"));
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        return m;
+    @Override
+    public RestClientCall options(String url) throws MalformedURLException {
+        return new RestClientCallImpl<>(url, new HttpOptions());
     }
 
-    private <M extends HttpEntityEnclosingRequestBase> M prepare(M m, InputStream dataInputStream, ContentType contentType) {
-        if (dataInputStream != null) {
-            m.setEntity(new InputStreamEntity(dataInputStream, contentType));
-        }
-        return m;
+    @Override
+    public RestClientDataCall post(String url) throws MalformedURLException {
+        return new RestClientDataCallImpl<>(url, new HttpPost());
     }
 
-
-
-    private String args(NameValuePair... parameters) {
-        StringBuilder args = new StringBuilder();
-        if (parameters != null && parameters.length > 0) {
-            args.append("?");
-            for(NameValuePair nvp : parameters) {
-                args.append(encode(nvp.getName())).append('=').append(encode(nvp.getValue())).append('&');
-            }
-        }
-        String s = args.toString();
-        if (s.length() > 0) {
-            s = s.substring(0, s.length() -1);
-        }
-        return s;
-    }
-
-    private RestClientResponse doCall(String url, Function<String,HttpRequestBase> method) throws IOException {
-        url = prepareURL(url);
-        HttpRequestBase methodToExecute = method.apply(url);
-        PluginContextImpl ctx = new PluginContextImpl();
-        ctx.setRequest(methodToExecute);
-        InvocationChain chain = InvocationChain.create(plugins, ctx, () -> {
-            HttpResponse response = httpClient.execute(methodToExecute, httpClientContext);
-            RestClientResponse cr = new StandardRestClientResponse(response);
-            ctx.setResponse(cr);
-            return ctx;
-        });
-        try {
-            chain.operation.call();
-        } catch (Exception e) {
-            throw new IOException("Chain exception", e);
-        }
-        return ctx.getResponse();
+    @Override
+    public RestClientDataCall put(String url) throws MalformedURLException {
+        return new RestClientDataCallImpl<>(url, new HttpPut());
     }
 
     @Override
@@ -153,12 +100,8 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
-    protected String prepareURL(String urlArgument) {
-        return urlArgument;
-    }
 
-
-    private String encode(String s) {
+    private static String encode(String s) {
         try {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -166,58 +109,124 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
-}
 
-class InvocationChain implements RestClientPlugin.PluginChain {
-    final Callable operation;
 
-    InvocationChain(Callable operation) {
-        this.operation = operation;
-    }
+    abstract class AbstractRestClientCall<C extends BaseRestClientCall,M extends HttpRequestBase> implements BaseRestClientCall<C> {
+        private final Map<String,String[]> parameters = new HashMap<>();
+        protected final M method;
 
-    @Override
-    public void continueChain() throws Exception {
-        operation.call();
-    }
+        protected AbstractRestClientCall(String url, M method) throws MalformedURLException {
+            new URL(url);
+            this.method = method;
+        }
 
-    public static InvocationChain create(RestClientPlugin[] plugins, RestClientPlugin.PluginContext ctx, Callable dispatcher) {
-        InvocationChain last = new InvocationChain(dispatcher);
-        for(int i=plugins.length -1; i>=0; i--) {
-            final int j = i;
-            final InvocationChain next = last;
-            last = new InvocationChain(()->{
-                plugins[j].plugin(ctx, next);
+        @Override
+        public RestClientResponse execute() throws IOException {
+            if (! parameters.isEmpty()) {
+                applyParameters(method, parameters);
+            }
+            PluginContextImpl ctx = new PluginContextImpl();
+            ctx.setRequest(method);
+            InvocationChain chain = InvocationChain.create(plugins, ctx, () -> {
+                HttpResponse response = httpClient.execute(method, httpClientContext);
+                RestClientResponse cr = new StandardRestClientResponse(response);
+                ctx.setResponse(cr);
                 return ctx;
             });
+            try {
+                chain.operation.call();
+            } catch (Exception e) {
+                throw new IOException("Chain exception", e);
+            }
+            return ctx.getResponse();
         }
-        return last;
+
+        @Override
+        public C parameter(String name, Object value) {
+            String[] actual = parameters.get(name);
+            String str = value == null ? "" : value.toString();
+            if (actual == null) {
+                parameters.put(name, new String[] { str });
+            } else {
+                String[] values = new String[actual.length + 1];
+                System.arraycopy(actual, 0, values, 0, actual.length);
+                values[actual.length] = str;
+                parameters.put(name, values);
+            }
+            return (C) this;
+        }
+
+        protected abstract void applyParameters(M method, Map<String,String[]> params) throws UnsupportedEncodingException;
+    }
+
+
+    class RestClientCallImpl<M extends HttpRequestBase> extends DefaultRestClient.AbstractRestClientCall<RestClientCall,M> implements RestClientCall {
+        RestClientCallImpl(String url, M method) throws MalformedURLException {
+            super(url, method);
+        }
+
+        @Override
+        protected void applyParameters(M method, Map<String,String[]> params) {
+            String uri = method.getURI().toASCIIString();
+            boolean hasParam = uri.contains("?");
+            StringBuilder sb = new StringBuilder(method.getURI().toASCIIString());
+            for(Map.Entry<String,String[]> x : params.entrySet()) {
+                final String name = encode(x.getKey());
+                for(String val : x.getValue()) {
+                    sb.append(hasParam ? '&' : '?').append(name).append('=').append(encode(val));
+                    hasParam = true;
+                }
+            }
+            try {
+                method.setURI(new URI(sb.toString()));
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException("Invalid uri '" + sb + "'", e);
+            }
+        }
+    }
+
+
+    class RestClientDataCallImpl<M extends HttpEntityEnclosingRequestBase> extends DefaultRestClient.AbstractRestClientCall<RestClientDataCall,M> implements RestClientDataCall {
+        private Charset charset;
+        RestClientDataCallImpl(String url, M method) throws MalformedURLException {
+            super(url, method);
+        }
+
+        @Override
+        protected void applyParameters(M method, Map<String, String[]> params) throws UnsupportedEncodingException {
+            List<NameValuePair> list = new LinkedList<>();
+            for(Map.Entry<String,String[]> x : params.entrySet()) {
+                final String name = x.getKey();
+                for(String val : x.getValue()) {
+                    list.add(new BasicNameValuePair(name, val));
+                }
+            }
+            method.setEntity(new UrlEncodedFormEntity(list, "UTF-8"));
+        }
+
+        @Override
+        public RestClientDataCall setData(InputStream inputStream, ContentType contentType) {
+            method.setEntity(new InputStreamEntity(inputStream, contentType));
+            return this;
+        }
+
+        @Override
+        public RestClientDataCall setData(byte[] data, ContentType contentType) {
+            method.setEntity(new ByteArrayEntity(data, contentType));
+            return this;
+        }
+
+        @Override
+        public RestClientDataCall setData(String data, ContentType contentType) {
+            method.setEntity(new StringEntity(data, contentType));
+            return this;
+        }
+
+        @Override
+        public RestClientDataCall setParametersEncoding(String charset) {
+            this.charset = Charset.forName(charset);
+            return this;
+        }
     }
 }
 
-class PluginContextImpl implements RestClientPlugin.PluginContext {
-    private HttpRequestBase request;
-    private RestClientResponse response;
-
-    @Override
-    public HttpRequestBase getRequest() {
-        return request;
-    }
-
-    @Override
-    public void setRequest(HttpRequestBase request) {
-        this.request = request;
-    }
-
-    @Override
-    public RestClientResponse getResponse() {
-        if (response == null) {
-            throw new IllegalStateException("Request wasn't submitted yet!");
-        }
-        return response;
-    }
-
-    @Override
-    public void setResponse(RestClientResponse response) {
-        this.response = response;
-    }
-}

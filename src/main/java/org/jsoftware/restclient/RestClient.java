@@ -6,6 +6,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -18,44 +20,17 @@ public interface RestClient extends AutoCloseable {
 
     List<RestClientPlugin> getPlugins();
 
-    RestClientResponse get(String url, NameValuePair... parameters) throws IOException;
+    RestClientCall get(String url) throws MalformedURLException;
 
-    RestClientResponse delete(String url, NameValuePair... parameters) throws IOException;
+    RestClientCall head(String url) throws MalformedURLException;
 
-    RestClientResponse post(String url, NameValuePair... parameters) throws IOException;
+    RestClientCall options(String url) throws MalformedURLException;
 
-    RestClientResponse put(String url, NameValuePair... parameters) throws IOException;
+    RestClientCall delete(String url) throws MalformedURLException;
 
-    RestClientResponse post(String url, InputStream dataInputStream, ContentType contentType) throws IOException;
+    RestClientDataCall post(String url) throws MalformedURLException;
 
-    RestClientResponse put(String url, InputStream dataInputStream, ContentType contentType) throws IOException;
-
-    default RestClientResponse get(String url, Map<String,Object> parameters) throws IOException {
-        BasicNameValuePair[] args = parameters.entrySet().stream().filter(x -> x.getValue() != null).map(x -> new BasicNameValuePair(x.getKey(), x.getValue().toString())).toArray(size -> new BasicNameValuePair[size]);
-        return get(url, args);
-    }
-
-
-    default RestClientResponse post(String url, Map<String,Object> parameters) throws IOException {
-        BasicNameValuePair[] args = parameters.entrySet().stream().filter(x -> x.getValue() != null).map(x -> new BasicNameValuePair(x.getKey(), x.getValue().toString())).toArray(size -> new BasicNameValuePair[size]);
-        return post(url, args);
-    }
-
-
-    default RestClientResponse put(String url, Map<String,Object> parameters) throws IOException {
-        BasicNameValuePair[] args = parameters.entrySet().stream().filter(x -> x.getValue() != null).map(x -> new BasicNameValuePair(x.getKey(), x.getValue().toString())).toArray(size -> new BasicNameValuePair[size]);
-        return put(url, args);
-    }
-
-
-    default RestClientResponse delete(String url, Map<String,Object> parameters) throws IOException {
-        BasicNameValuePair[] args = parameters.entrySet().stream().filter(x -> x.getValue() != null).map(x -> new BasicNameValuePair(x.getKey(), x.getValue().toString())).toArray(size -> new BasicNameValuePair[size]);
-        return delete(url, args);
-    }
-
-    static NameValuePair param(String name, Object value) {
-        return new BasicNameValuePair(name, value == null ? null : value.toString());
-    }
+    RestClientDataCall put(String url) throws MalformedURLException;
 
 
 }

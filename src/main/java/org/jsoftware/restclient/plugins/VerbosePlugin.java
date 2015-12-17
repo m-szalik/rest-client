@@ -4,8 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.jsoftware.restclient.RestClientResponse;
 import org.jsoftware.restclient.RestClientPlugin;
+import org.jsoftware.restclient.RestClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

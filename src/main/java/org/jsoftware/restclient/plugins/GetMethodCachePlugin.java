@@ -1,7 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
-import org.jsoftware.restclient.RestClientResponse;
 import org.jsoftware.restclient.RestClientPlugin;
+import org.jsoftware.restclient.RestClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
