@@ -22,9 +22,10 @@ public interface RestClientPlugin {
 
         /**
          * Not available before request is not sent
+         * @throws IllegalStateException if response is not available
          * @return current http response
          */
-        Optional<RestClientResponse> getResponse();
+        RestClientResponse getResponse();
 
         /**
          * Override http request
