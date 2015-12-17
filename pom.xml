@@ -38,4 +38,16 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <url>https://github.com/m-szalik/rest-client.git</url>
+        <connection>scm:git:https://github.com/m-szalik/rest-client.git</connection>
+        <developerConnection>scm:git:https://github.com/m-szalik/rest-client.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/m-szalik/rest-client/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
 </project>
