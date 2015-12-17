@@ -6,7 +6,7 @@
 
     <groupId>org.jsoftware</groupId>
     <artifactId>rest-client</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
 
     <parent>
         <groupId>org.jsoftware</groupId>
