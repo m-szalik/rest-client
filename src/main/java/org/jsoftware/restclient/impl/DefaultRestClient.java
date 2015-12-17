@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 /**
+ * Deafult implementation of RestClient
  * @author szalik
  */
 public class DefaultRestClient implements RestClient {
@@ -32,10 +33,18 @@ public class DefaultRestClient implements RestClient {
     private RestClientPlugin[] plugins = new RestClientPlugin[0];
 
 
+    /**
+     * Instance with features enabled
+     * @param features features to enable
+     */
     public DefaultRestClient(RestClientFeature[] features) {
         this(features, new RestClientPlugin[0]);
     }
 
+    /**
+     * @param features features to enable
+     * @param plugins plugins to be added
+     */
     public DefaultRestClient(RestClientFeature[] features, RestClientPlugin... plugins) {
         httpClient = HttpClients.createDefault();
         httpClientContext = HttpClientContext.create();
@@ -45,6 +54,9 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
+    /**
+     * Instance with no features enabled and no plugins
+     */
     public DefaultRestClient() {
         this(new RestClientFeature[0]);
     }
@@ -206,25 +218,25 @@ public class DefaultRestClient implements RestClient {
         }
 
         @Override
-        public RestClientDataCall setData(InputStream inputStream, ContentType contentType) {
+        public RestClientDataCall body(InputStream inputStream, ContentType contentType) {
             method.setEntity(new InputStreamEntity(inputStream, contentType));
             return this;
         }
 
         @Override
-        public RestClientDataCall setData(byte[] data, ContentType contentType) {
+        public RestClientDataCall body(byte[] data, ContentType contentType) {
             method.setEntity(new ByteArrayEntity(data, contentType));
             return this;
         }
 
         @Override
-        public RestClientDataCall setData(String data, ContentType contentType) {
+        public RestClientDataCall body(String data, ContentType contentType) {
             method.setEntity(new StringEntity(data, contentType));
             return this;
         }
 
         @Override
-        public RestClientDataCall setParametersEncoding(String charset) {
+        public RestClientDataCall parametersEncoding(String charset) {
             this.charset = Charset.forName(charset);
             return this;
         }

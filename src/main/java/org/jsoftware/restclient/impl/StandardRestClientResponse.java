@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.io.StringReader;
 
 /**
+ *
  * @author szalik
  */
 class StandardRestClientResponse implements RestClientResponse {

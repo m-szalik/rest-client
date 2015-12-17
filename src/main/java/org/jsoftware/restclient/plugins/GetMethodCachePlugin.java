@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Cache get methods
+ * Cache get method calls
  * @author szalik
  */
 public class GetMethodCachePlugin implements RestClientPlugin {

@@ -6,6 +6,10 @@ import org.jsoftware.restclient.RestClientResponse;
 
 import java.util.concurrent.Callable;
 
+/**
+ * Chain of responsibility
+ * @author szalik
+ */
 class InvocationChain implements RestClientPlugin.PluginChain {
     final Callable operation;
 
