@@ -28,6 +28,7 @@ public interface RestClientResponse extends Serializable {
     Header[] getAllHeaders();
 
     /**
+     * @throws IOException if http response cannot be read
      * @return response body as String
      */
     String getContent() throws IOException;
@@ -36,31 +37,45 @@ public interface RestClientResponse extends Serializable {
      * Parse response body as json
      * @param path json path
      * @return String, Number, List...
-     * @see https://github.com/jayway/JsonPath
+     * @throws IOException if response cannot be read or is not valid json
+     * @see <a href="https://github.com/jayway/JsonPath">Jayway</a>
      */
     Object json(String path) throws IOException;
 
     /**
      * Parse response body as xml
      * @see javax.xml.xpath.XPathConstants
+     * @param xPath xPath definition
+     * @param type requested xPath type
+     * @return requested value
+     * @throws IOException if response cannot be read
+     * @throws SAXException if response is not valid xml
+     * @throws XPathExpressionException if argument <code>xPath</code> is not valid xPath definition
      */
-    Object xPath(String xPath, QName type) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException;
+    Object xPath(String xPath, QName type) throws IOException, SAXException, XPathExpressionException;
 
     /**
      * Parse response body as xml
+     * @param xPath xPath definition
+     * @return requested value
+     * @throws IOException if response cannot be read
+     * @throws SAXException if response is not valid xml
+     * @throws XPathExpressionException if argument <code>xPath</code> is not valid xPath definition
      */
-    String xPath(String xPath) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException;
+    String xPath(String xPath) throws IOException, SAXException, XPathExpressionException;
 
     /**
      * Dump response to PrintStream
      * @param withHeaders add headers if true
      * @param to output stream
+     * @throws IOException if response cannot be read
      */
     void dump(boolean withHeaders, PrintStream to) throws IOException;
 
     /**
      * Dump response to stdout
      * @param withHeaders add headers if true
+     * @throws IOException if response cannot be read
      */
     default void dump(boolean withHeaders) throws IOException {
         dump(withHeaders, System.out);

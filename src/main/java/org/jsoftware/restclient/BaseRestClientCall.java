@@ -9,7 +9,8 @@ import java.io.IOException;
 public interface BaseRestClientCall<C extends BaseRestClientCall> {
 
     /**
-     * Execute call
+     * Execute http call
+     * @throws IOException if http request failed
      * @return http response
      */
     RestClientResponse execute() throws IOException;

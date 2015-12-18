@@ -38,13 +38,14 @@ public interface RestClientPlugin {
         void setResponse(RestClientResponse response);
     }
 
+
     /**
      * Chain of responsibility for RestClientPlugins
      */
     interface PluginChain {
         /**
          * Continue chain of plugins
-         * @throws Exception
+         * @throws Exception if any error in chain occurred
          */
         void continueChain() throws Exception;
     }
@@ -53,7 +54,7 @@ public interface RestClientPlugin {
      * Plugin main method
      * @param context http request context
      * @param chain chain of plugins
-     * @throws Exception
+     * @throws Exception if any error in chain occurred
      */
     void plugin(PluginContext context, PluginChain chain) throws Exception;
 }
