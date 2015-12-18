@@ -1,6 +1,5 @@
 package org.jsoftware.restclient.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -28,8 +27,8 @@ import java.util.*;
  * @author szalik
  */
 public class DefaultRestClient implements RestClient {
-    private CloseableHttpClient httpClient;
-    private HttpClientContext httpClientContext;
+    private final CloseableHttpClient httpClient;
+    private final HttpClientContext httpClientContext;
     private RestClientPlugin[] plugins = new RestClientPlugin[0];
 
 
@@ -174,7 +173,7 @@ public class DefaultRestClient implements RestClient {
             return (C) this;
         }
 
-        protected abstract void applyParameters(M method, Map<String,String[]> params) throws UnsupportedEncodingException;
+        protected abstract void applyParameters(M method, Map<String,String[]> params);
     }
 
 
@@ -212,7 +211,7 @@ public class DefaultRestClient implements RestClient {
         }
 
         @Override
-        protected void applyParameters(M method, Map<String, String[]> params) throws UnsupportedEncodingException {
+        protected void applyParameters(M method, Map<String, String[]> params) {
             List<NameValuePair> list = new LinkedList<>();
             for(Map.Entry<String,String[]> x : params.entrySet()) {
                 final String name = x.getKey();

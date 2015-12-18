@@ -23,7 +23,7 @@ public class VerbosePlugin implements RestClientPlugin {
     private final boolean logsOutput;
 
     /**
-     * Create plgin instance
+     * Create plugin instance
      * @param logsOutput it true output goes to slf4j logs
      * @param outputs array of PrintStreams to send output there
      */

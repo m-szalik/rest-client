@@ -60,7 +60,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
 }
 
 class MyLRUCache<K, V> extends LinkedHashMap<K, V> {
-    private int cacheSize;
+    private final int cacheSize;
 
     public MyLRUCache(int cacheSize) {
         super(16, 0.75f, true);

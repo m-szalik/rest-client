@@ -2,8 +2,6 @@ package org.jsoftware.restclient;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-import java.util.Optional;
-
 /**
  * RestClientPlugin allows modification of http requests and responses
  * @author szalik
@@ -29,13 +27,13 @@ public interface RestClientPlugin {
 
         /**
          * Override http request
-         * @param request
+         * @param request set request
          */
         void setRequest(HttpRequestBase request);
 
         /**
          * Override http response
-         * @param response
+         * @param response set client's response
          */
         void setResponse(RestClientResponse response);
     }

@@ -12,7 +12,7 @@ public interface RestClientDataCall extends BaseRestClientCall<RestClientDataCal
 
     /**
      * Set parameters encoding
-     * @param charset
+     * @param charset charse for encoding post and put parameters
      * @return self
      * @see BaseRestClientCall#parameter(String, Object)
      */
