@@ -173,6 +173,12 @@ public class DefaultRestClient implements RestClient {
             return (C) this;
         }
 
+        @Override
+        public C header(String name, String value) {
+            method.setHeader(name, value);
+            return (C) this;
+        }
+
         protected abstract void applyParameters(M method, Map<String,String[]> params);
     }
 

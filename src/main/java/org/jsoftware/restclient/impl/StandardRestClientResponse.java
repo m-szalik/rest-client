@@ -86,14 +86,24 @@ class StandardRestClientResponse implements RestClientResponse {
 
 
     @Override
-    public Object xPath(String xPath, QName type) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
-        XPathExpression expr = xPathInternal(xPath);
+    public Object xPath(String xPath, QName type) throws IOException, SAXException, XPathExpressionException {
+        XPathExpression expr = null;
+        try {
+            expr = xPathInternal(xPath);
+        } catch (ParserConfigurationException e) {
+            throw new AssertionError(e);
+        }
         return expr.evaluate(xmlDocument, type);
     }
 
     @Override
-    public String xPath(String xPath) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
-        XPathExpression expr = xPathInternal(xPath);
+    public String xPath(String xPath) throws IOException, SAXException, XPathExpressionException {
+        XPathExpression expr = null;
+        try {
+            expr = xPathInternal(xPath);
+        } catch (ParserConfigurationException e) {
+            throw new AssertionError(e);
+        }
         return expr.evaluate(xmlDocument);
     }
 

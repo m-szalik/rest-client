@@ -23,4 +23,12 @@ public interface BaseRestClientCall<C extends BaseRestClientCall> {
      */
     C parameter(String name, Object value);
 
+    /**
+     * Set http header
+     * @param name header name
+     * @param value header value
+     * @return self
+     */
+    C header(String name, String value);
+
 }
