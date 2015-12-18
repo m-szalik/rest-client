@@ -29,7 +29,6 @@ public interface RestClientResponse extends Serializable {
 
     /**
      * @return response body as String
-     * @throws IOException
      */
     String getContent() throws IOException;
 
@@ -37,7 +36,6 @@ public interface RestClientResponse extends Serializable {
      * Parse response body as json
      * @param path json path
      * @return String, Number, List...
-     * @throws IOException
      * @see https://github.com/jayway/JsonPath
      */
     Object json(String path) throws IOException;
@@ -57,14 +55,12 @@ public interface RestClientResponse extends Serializable {
      * Dump response to PrintStream
      * @param withHeaders add headers if true
      * @param to output stream
-     * @throws IOException
      */
     void dump(boolean withHeaders, PrintStream to) throws IOException;
 
     /**
      * Dump response to stdout
      * @param withHeaders add headers if true
-     * @throws IOException
      */
     default void dump(boolean withHeaders) throws IOException {
         dump(withHeaders, System.out);

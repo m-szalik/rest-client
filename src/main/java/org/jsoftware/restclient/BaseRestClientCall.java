@@ -11,7 +11,6 @@ public interface BaseRestClientCall<C extends BaseRestClientCall> {
     /**
      * Execute call
      * @return http response
-     * @throws IOException
      */
     RestClientResponse execute() throws IOException;
 
