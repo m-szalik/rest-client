@@ -28,6 +28,7 @@ RestClientResponse response = restClient.get("https://api.stackexchange.com/2.2/
 
 List<Number> questionIds = (List<Number>) response.json("$..answer_id");            // get all answer_id fields from response
 ```
+More about syntax for __.json(String)__ method argument can be found [here](https://github.com/jayway/JsonPath).
 
 ### Http GET request for XML response:
 ```java
