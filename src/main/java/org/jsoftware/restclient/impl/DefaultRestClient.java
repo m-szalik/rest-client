@@ -41,8 +41,18 @@ public class DefaultRestClient implements RestClient {
     }
 
     /**
+     * No special features is enabled.
+     * @param plugins plugins to enable
+     * @see #setPlugins(List)
+     */
+    public DefaultRestClient(RestClientPlugin... plugins) {
+        this(new RestClientFeature[0], plugins);
+    }
+
+    /**
      * @param features features to enable
      * @param plugins plugins to be added
+     * @see #setPlugins(List)
      */
     public DefaultRestClient(RestClientFeature[] features, RestClientPlugin... plugins) {
         httpClient = HttpClients.createDefault();
