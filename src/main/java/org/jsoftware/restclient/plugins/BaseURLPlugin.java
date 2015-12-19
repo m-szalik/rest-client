@@ -22,8 +22,16 @@ public class BaseURLPlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String baseURL;
 
-    public BaseURLPlugin(String baseURL) throws MalformedURLException {
-        new URL(baseURL);
+    /**
+     * @param baseURL BaseURL
+     * @throws IllegalArgumentException if baseURL is not valid URL
+     */
+    public BaseURLPlugin(String baseURL) throws IllegalArgumentException {
+        try {
+            new URL(baseURL);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Argument is not valid URL - '" +baseURL + "'", e);
+        }
         this.baseURL = baseURL;
     }
 
