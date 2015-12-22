@@ -42,6 +42,13 @@ public class GetMethodCachePlugin implements RestClientPlugin {
             CacheEntry ce = cache.get(key);
             long now = System.currentTimeMillis();
             if (ce == null || ce.getTimeout() < now) {
+                if (logger.isTraceEnabled()) {
+                    if (ce == null) {
+                        logger.trace("Response for {} not found in cache.", context.getRequest());
+                    } else {
+                        logger.trace("Response for {} found in cache, but it is expired.", context.getRequest());
+                    }
+                }
                 chain.continueChain();
                 RestClientResponse restClientResponse = context.getResponse();
                 if (restClientResponse == null) {
@@ -56,6 +63,10 @@ public class GetMethodCachePlugin implements RestClientPlugin {
         } else {
             chain.continueChain();
         }
+    }
+
+    public void clearCache() {
+        cache.clear();
     }
 }
 
