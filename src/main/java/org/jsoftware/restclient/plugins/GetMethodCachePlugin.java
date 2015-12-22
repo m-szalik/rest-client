@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Cache get method calls
@@ -17,6 +18,8 @@ public class GetMethodCachePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final long timeoutMillis;
     private final MyLRUCache<String,CacheEntry> cache;
+    private final AtomicLong hits = new AtomicLong(), misses = new AtomicLong();
+
 
     /**
      * @param timeoutMillis cache ttl im milliseconds
@@ -49,6 +52,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
                         logger.trace("Response for {} found in cache, but it is expired.", context.getRequest());
                     }
                 }
+                misses.incrementAndGet();
                 chain.continueChain();
                 RestClientResponse restClientResponse = context.getResponse();
                 if (restClientResponse == null) {
@@ -58,6 +62,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
                 logger.trace("Response for {} put into cache.", context.getRequest());
             } else {
                 logger.trace("Response for {} fetched from cache.", context.getRequest());
+                hits.incrementAndGet();
                 context.setResponse(ce.getResponse());
             }
         } else {
@@ -65,10 +70,45 @@ public class GetMethodCachePlugin implements RestClientPlugin {
         }
     }
 
+    /**
+     * Clear cache content and cache statistics
+     */
     public void clearCache() {
         cache.clear();
+        misses.set(0);
+        hits.set(0);
+    }
+
+    public CacheStatistics getStatistics() {
+        return new CacheStatistics() {
+            @Override
+            public long getHits() {
+                return hits.get();
+            }
+            @Override
+            public long getMisses() {
+                return misses.get();
+            }
+        };
+    }
+
+    /**
+     * Cache statistics
+     * @author szalik
+     */
+    public interface CacheStatistics {
+        /**
+         * @return cache hits
+         */
+        long getHits();
+        /**
+         * @return cache misses
+         */
+        long getMisses();
     }
 }
+
+
 
 class MyLRUCache<K, V> extends LinkedHashMap<K, V> {
     private final int cacheSize;
