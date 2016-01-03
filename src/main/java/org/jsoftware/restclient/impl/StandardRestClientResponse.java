@@ -27,14 +27,11 @@ import java.io.PrintStream;
 import java.io.StringReader;
 
 /**
- *
  * @author szalik
  */
-class StandardRestClientResponse implements RestClientResponse {
+class StandardRestClientResponse extends AbstractStandardRestClientResponse {
     private final HttpResponse httpResponse;
     private String content;
-    private DocumentContext json;
-    private Document xmlDocument;
 
     StandardRestClientResponse(HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
@@ -64,59 +61,4 @@ class StandardRestClientResponse implements RestClientResponse {
         return content;
     }
 
-    @Override
-    public synchronized Object json(String path) throws IOException {
-        if (json == null) {
-            json = JsonPath.parse(getContent());
-        }
-        return json.read(path);
-    }
-
-
-    private synchronized XPathExpression xPathInternal(String xPath) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
-        if (xmlDocument == null) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            xmlDocument = builder.parse(new InputSource(new StringReader(getContent())));
-        }
-        XPathFactory xPathfactory = XPathFactory.newInstance();
-        XPath xpath = xPathfactory.newXPath();
-        return xpath.compile(xPath);
-    }
-
-
-    @Override
-    public Object xPath(String xPath, QName type) throws IOException, SAXException, XPathExpressionException {
-        XPathExpression expr = null;
-        try {
-            expr = xPathInternal(xPath);
-        } catch (ParserConfigurationException e) {
-            throw new AssertionError(e);
-        }
-        return expr.evaluate(xmlDocument, type);
-    }
-
-    @Override
-    public String xPath(String xPath) throws IOException, SAXException, XPathExpressionException {
-        XPathExpression expr = null;
-        try {
-            expr = xPathInternal(xPath);
-        } catch (ParserConfigurationException e) {
-            throw new AssertionError(e);
-        }
-        return expr.evaluate(xmlDocument);
-    }
-
-    @Override
-    public void dump(boolean withHeaders, PrintStream to) throws IOException {
-        StringBuilder s = new StringBuilder();
-        s.append(getStatusLine()).append('\n');
-        if (withHeaders) {
-            for(Header h : getAllHeaders()) {
-                s.append("HEADER ").append(h.getName()).append(":").append(h.getValue()).append('\n');
-            }
-        }
-        s.append(getContent());
-        to.append(s).flush();
-    }
 }
