@@ -30,7 +30,7 @@ public class BaseURLPlugin implements RestClientPlugin {
         try {
             new URL(baseURL);
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Argument is not valid URL - '" +baseURL + "'", e);
+            throw new IllegalArgumentException("Argument is not valid URL - '" + baseURL + "'", e);
         }
         this.baseURL = baseURL;
     }
@@ -47,5 +47,6 @@ public class BaseURLPlugin implements RestClientPlugin {
             logger.debug("URL changed from '{}' to '{}'", current, url);
             context.getRequest().setURI(new URI(url));
         }
+        chain.continueChain();
     }
 }
