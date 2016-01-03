@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.time.Clock;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -20,7 +21,20 @@ public class GetMethodCachePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final long timeoutMillis;
     private final MyLRUCache<String,CacheEntry> cache;
+    private final Clock clock;
+
     private final AtomicLong hits = new AtomicLong(), misses = new AtomicLong();
+
+    /**
+     * @param timeoutMillis cache ttl im milliseconds
+     * @param size cache size
+     * @param clock to get <code>now</code>
+     */
+    protected GetMethodCachePlugin(long timeoutMillis, int size, Clock clock) {
+        this.timeoutMillis = timeoutMillis;
+        this.cache = new MyLRUCache<>(size);
+        this.clock = clock;
+    }
 
 
     /**
@@ -28,8 +42,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
      * @param size cache size
      */
     public GetMethodCachePlugin(long timeoutMillis, int size) {
-        this.timeoutMillis = timeoutMillis;
-        this.cache = new MyLRUCache<>(size);
+        this(timeoutMillis, size, Clock.systemDefaultZone());
     }
 
     /**
@@ -40,12 +53,14 @@ public class GetMethodCachePlugin implements RestClientPlugin {
         this(timeoutMillis, 128);
     }
 
+
+
     @Override
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
         if ("GET".equalsIgnoreCase(context.getRequest().getMethod())) {
             String key = context.getRequest().getURI().toString();
             CacheEntry ce = cache.get(key);
-            long now = System.currentTimeMillis();
+            long now = clock.millis();
             boolean fetch = ce == null || ce.getTimeout() < now;
             if (! fetch) {
                 fetch = headerEq(context.getRequest(), "Cache-Control", "no-cache") || headerEq(context.getRequest(), "Pragma", "no-cache");

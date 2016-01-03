@@ -17,13 +17,14 @@ import java.util.function.Function;
  */
 public class AbstractPluginTest {
 
-    protected void call(RestClientPlugin plugin, HttpRequestBase request, Function<HttpRequestBase, RestClientResponse> responseFunction) throws Exception {
+    protected RestClientResponse call(RestClientPlugin plugin, HttpRequestBase request, Function<HttpRequestBase, RestClientResponse> responseFunction) throws Exception {
         TestPluginContext pc = new TestPluginContext();
         pc.setRequest(request);
         plugin.plugin(pc, () -> {
             RestClientResponse resp = responseFunction.apply(pc.getRequest());
             pc.setResponse(resp);
         });
+        return pc.getResponse();
     }
 
     protected RestClientResponse stdResponse(int httpCode, String content, Header... headers) {

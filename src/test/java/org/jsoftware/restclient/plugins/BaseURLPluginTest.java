@@ -22,7 +22,7 @@ public class BaseURLPluginTest extends AbstractPluginTest {
         final StringBuilder sb = new StringBuilder();
         call(plugin, get(URI), (r)->{
             sb.append(r.getURI());
-            return stdResponse(20, "");
+            return stdResponse(200, "");
         });
         assertEquals(URI, sb.toString());
     }
@@ -32,7 +32,7 @@ public class BaseURLPluginTest extends AbstractPluginTest {
         final StringBuilder sb = new StringBuilder();
         call(plugin, get("two"), (r)->{
             sb.append(r.getURI());
-            return stdResponse(20, "");
+            return stdResponse(200, "");
         });
         assertEquals("http://somewhere.com/query/two", sb.toString());
     }
@@ -42,7 +42,7 @@ public class BaseURLPluginTest extends AbstractPluginTest {
         final StringBuilder sb = new StringBuilder();
         call(plugin, get("/two"), (r)->{
             sb.append(r.getURI());
-            return stdResponse(20, "");
+            return stdResponse(200, "");
         });
         assertEquals("http://somewhere.com/query/two", sb.toString());
     }
