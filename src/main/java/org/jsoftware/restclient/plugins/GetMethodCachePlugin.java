@@ -1,5 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
 import org.slf4j.Logger;
@@ -44,12 +46,16 @@ public class GetMethodCachePlugin implements RestClientPlugin {
             String key = context.getRequest().getURI().toString();
             CacheEntry ce = cache.get(key);
             long now = System.currentTimeMillis();
-            if (ce == null || ce.getTimeout() < now) {
+            boolean fetch = ce == null || ce.getTimeout() < now;
+            if (! fetch) {
+                fetch = headerEq(context.getRequest(), "Cache-Control", "no-cache") || headerEq(context.getRequest(), "Pragma", "no-cache");
+            }
+            if (fetch) {
                 if (logger.isTraceEnabled()) {
                     if (ce == null) {
                         logger.trace("Response for {} not found in cache.", context.getRequest());
                     } else {
-                        logger.trace("Response for {} found in cache, but it is expired.", context.getRequest());
+                        logger.trace("Response for {} found in cache, but it is expired or requested by setting http request header.", context.getRequest());
                     }
                 }
                 misses.incrementAndGet();
@@ -69,6 +75,25 @@ public class GetMethodCachePlugin implements RestClientPlugin {
             chain.continueChain();
         }
     }
+
+    /**
+     * Check if request contains header with value
+     * @param request request
+     * @param headerName header name
+     * @param headerValue header value to check
+     */
+    private boolean headerEq(HttpRequestBase request, String headerName, String headerValue) {
+        Header[] headers = request.getAllHeaders();
+        if (headers != null) {
+            for(Header h : headers) {
+                if (h.getName().equalsIgnoreCase(headerName) && h.getValue().equalsIgnoreCase(headerValue)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Clear cache content and cache statistics
