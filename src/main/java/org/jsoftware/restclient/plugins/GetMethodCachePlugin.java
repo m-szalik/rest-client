@@ -86,7 +86,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
         Header[] headers = request.getAllHeaders();
         if (headers != null) {
             for(Header h : headers) {
-                if (h.getName().equalsIgnoreCase(headerName) && h.getValue().equalsIgnoreCase(headerValue)) {
+                if (headerName.equalsIgnoreCase(h.getName()) && headerValue.equalsIgnoreCase(h.getValue())) {
                     return true;
                 }
             }
