@@ -37,7 +37,7 @@ public class VerbosePlugin implements RestClientPlugin {
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
         StringBuilder s = new StringBuilder();
         HttpRequestBase request = context.getRequest();
-        s.append("> ").append(request.getMethod()).append(' ').append(request.getURI()).append('\n');
+        s.append("> ").append(request.getMethod()).append(' ').append(context.getURI()).append('\n');
         if (request instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase r = (HttpEntityEnclosingRequestBase) request;
             HttpEntity entity = r.getEntity();
