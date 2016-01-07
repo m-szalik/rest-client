@@ -36,6 +36,16 @@ public interface RestClientPlugin {
          * @param response set client's response
          */
         void setResponse(RestClientResponse response);
+
+        /**
+         * @return requested URI
+         */
+        String getURI();
+
+        /**
+         * @param uri URI to call
+         */
+        void setURI(String uri);
     }
 
 

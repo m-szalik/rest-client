@@ -138,17 +138,13 @@ public class DefaultRestClient implements RestClient {
     abstract class AbstractRestClientCall<C extends BaseRestClientCall,M extends HttpRequestBase> implements BaseRestClientCall<C> {
         private final Map<String,String[]> parameters = new LinkedHashMap<>();
         protected final M method;
+        private String uri;
 
-        protected AbstractRestClientCall(String url, M method) throws MalformedURLException {
+        protected AbstractRestClientCall(String uri, M method) throws MalformedURLException {
             this.method = method;
-            try {
-                this.method.setURI(new URL(url).toURI());
-            } catch (URISyntaxException e) {
-                MalformedURLException mex = new MalformedURLException("Invalid url '" + url + "'");
-                mex.initCause(e);
-                throw mex;
-            }
+            this.uri = uri;
         }
+
 
         @Override
         public RestClientResponse execute() throws IOException {
@@ -157,7 +153,15 @@ public class DefaultRestClient implements RestClient {
             }
             PluginContextImpl ctx = new PluginContextImpl();
             ctx.setRequest(method);
+            ctx.setURI(uri);
             InvocationChain chain = InvocationChain.create(plugins, ctx, () -> {
+                try {
+                    this.method.setURI(new URL(ctx.getURI()).toURI());
+                } catch (URISyntaxException e) {
+                    MalformedURLException mex = new MalformedURLException("Invalid url '" + uri + "'");
+                    mex.initCause(e);
+                    throw mex;
+                }
                 HttpResponse response = httpClient.execute(method, httpClientContext);
                 RestClientResponse cr = new StandardRestClientResponse(response);
                 ctx.setResponse(cr);
@@ -193,6 +197,7 @@ public class DefaultRestClient implements RestClient {
         }
 
         protected abstract void applyParameters(M method, Map<String,String[]> params);
+
     }
 
 

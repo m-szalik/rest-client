@@ -39,6 +39,7 @@ class InvocationChain implements RestClientPlugin.PluginChain {
 class PluginContextImpl implements RestClientPlugin.PluginContext {
     private HttpRequestBase request;
     private RestClientResponse response;
+    private String uri;
 
     @Override
     public HttpRequestBase getRequest() {
@@ -56,6 +57,16 @@ class PluginContextImpl implements RestClientPlugin.PluginContext {
             throw new IllegalStateException("Request wasn't submitted yet!");
         }
         return response;
+    }
+
+    @Override
+    public String getURI() {
+        return uri;
+    }
+
+    @Override
+    public void setURI(String uri) {
+        this.uri = uri;
     }
 
     @Override

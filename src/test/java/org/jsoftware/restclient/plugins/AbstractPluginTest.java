@@ -11,6 +11,7 @@ import org.jsoftware.restclient.RestClientResponse;
 import org.jsoftware.restclient.impl.AbstractStandardRestClientResponse;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.function.Function;
 
 /**
@@ -19,8 +20,10 @@ public class AbstractPluginTest {
 
     protected RestClientResponse call(RestClientPlugin plugin, HttpRequestBase request, Function<HttpRequestBase, RestClientResponse> responseFunction) throws Exception {
         TestPluginContext pc = new TestPluginContext();
+        pc.setURI(request.getURI().toASCIIString());
         pc.setRequest(request);
         plugin.plugin(pc, () -> {
+            request.setURI(new URI(pc.getURI()));
             RestClientResponse resp = responseFunction.apply(pc.getRequest());
             pc.setResponse(resp);
         });
@@ -41,6 +44,7 @@ public class AbstractPluginTest {
 class TestPluginContext implements RestClientPlugin.PluginContext {
     private HttpRequestBase request;
     private RestClientResponse response;
+    private String uri;
 
     @Override
     public HttpRequestBase getRequest() {
@@ -60,6 +64,16 @@ class TestPluginContext implements RestClientPlugin.PluginContext {
     @Override
     public void setResponse(RestClientResponse response) {
         this.response = response;
+    }
+
+    @Override
+    public String getURI() {
+        return uri;
+    }
+
+    @Override
+    public void setURI(String uri) {
+        this.uri = uri;
     }
 }
 
