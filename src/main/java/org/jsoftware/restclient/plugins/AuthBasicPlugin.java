@@ -7,11 +7,14 @@ import org.apache.http.message.BasicHeader;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
 
+import java.nio.charset.Charset;
+
 /**
  * Add <code>Authorization</code> header with value <code>Basic Authorization</code>
  * @author szalik
  */
 public class AuthBasicPlugin implements RestClientPlugin {
+    private final static Charset UTF = Charset.forName("UTF-8");
     private final Header authHeader;
 
     public AuthBasicPlugin(String username, String password) {
@@ -25,8 +28,8 @@ public class AuthBasicPlugin implements RestClientPlugin {
     }
 
     public static Header createBasicAuthorizationHeader(String username, String password) {
-        byte[] encoding = Base64.encodeBase64((username + ":" + password).getBytes());
-        String str = new String(encoding);
+        byte[] encoding = Base64.encodeBase64((username + ":" + password).getBytes(UTF));
+        String str = new String(encoding, UTF);
         return new BasicHeader("Authorization", "Basic " + str);
     }
 
