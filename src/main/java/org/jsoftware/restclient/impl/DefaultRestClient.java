@@ -55,7 +55,7 @@ public class DefaultRestClient implements RestClient {
      * @see #setPlugins(List)
      */
     public DefaultRestClient(RestClientFeature[] features, RestClientPlugin... plugins) {
-        httpClient = HttpClients.createDefault();
+        httpClient = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient").build();
         httpClientContext = HttpClientContext.create();
         Set<RestClientFeature> f = new HashSet<>(Arrays.asList(features));
         if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
