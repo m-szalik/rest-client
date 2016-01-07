@@ -61,6 +61,9 @@ public class DefaultRestClient implements RestClient {
         if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
+        if (plugins != null) {
+            this.plugins = plugins;
+        }
     }
 
     /**
