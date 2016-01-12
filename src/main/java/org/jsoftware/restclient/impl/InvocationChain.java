@@ -60,6 +60,11 @@ class PluginContextImpl implements RestClientPlugin.PluginContext {
     }
 
     @Override
+    public boolean isResponseAvailable() {
+        return response != null;
+    }
+
+    @Override
     public String getURI() {
         return uri;
     }

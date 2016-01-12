@@ -53,6 +53,9 @@ class TestPluginContext implements RestClientPlugin.PluginContext {
 
     @Override
     public RestClientResponse getResponse() {
+        if (response == null) {
+            throw new IllegalArgumentException();
+        }
         return response;
     }
 
@@ -74,6 +77,11 @@ class TestPluginContext implements RestClientPlugin.PluginContext {
     @Override
     public void setURI(String uri) {
         this.uri = uri;
+    }
+
+    @Override
+    public boolean isResponseAvailable() {
+        return response != null;
     }
 }
 

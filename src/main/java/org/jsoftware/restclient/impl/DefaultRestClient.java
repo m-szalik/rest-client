@@ -169,6 +169,8 @@ public class DefaultRestClient implements RestClient {
             });
             try {
                 chain.operation.call();
+            } catch (IOException ioe) {
+                throw ioe;
             } catch (Exception e) {
                 throw new IOException("Chain exception", e);
             }

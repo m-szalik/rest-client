@@ -3,7 +3,6 @@ package org.jsoftware.restclient.plugins;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -53,8 +52,8 @@ public class VerbosePlugin implements RestClientPlugin {
         RESPONSE_STATUS {
             @Override
             void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
-                RestClientResponse response = ctx.getResponse();
-                if (response != null) {
+                if (ctx.isResponseAvailable()) {
+                    RestClientResponse response = ctx.getResponse();
                     buff.append("< ").append(response.getStatusLine()).append('\n');
                 }
             }
@@ -62,7 +61,7 @@ public class VerbosePlugin implements RestClientPlugin {
         RESPONSE_HEADERS {
             @Override
             void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
-                if (ctx.getResponse() != null) {
+                if (ctx.isResponseAvailable()) {
                     appendHeaders(buff, "< (header) ", ctx.getResponse().getAllHeaders());
                 }
             }
@@ -70,7 +69,7 @@ public class VerbosePlugin implements RestClientPlugin {
         RESPONSE_BODY {
             @Override
             void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
-                if (ctx.getResponse() != null) {
+                if (ctx.isResponseAvailable()) {
                     appendBody(buff, "< ", ctx.getResponse().getContent());
                 }
             }

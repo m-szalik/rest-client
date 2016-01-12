@@ -26,6 +26,11 @@ public interface RestClientPlugin {
         RestClientResponse getResponse();
 
         /**
+         * @return if response is available
+         */
+        boolean isResponseAvailable();
+
+        /**
          * Override http request
          * @param request set request
          */
