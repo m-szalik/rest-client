@@ -250,18 +250,21 @@ public class DefaultRestClient implements RestClient {
 
         @Override
         public RestClientDataCall body(InputStream inputStream, ContentType contentType) {
+            notNullCheck(inputStream, contentType);
             method.setEntity(new InputStreamEntity(inputStream, contentType));
             return this;
         }
 
         @Override
         public RestClientDataCall body(byte[] data, ContentType contentType) {
+            notNullCheck(data, contentType);
             method.setEntity(new ByteArrayEntity(data, contentType));
             return this;
         }
 
         @Override
         public RestClientDataCall body(String data, ContentType contentType) {
+            notNullCheck(data, contentType);
             method.setEntity(new StringEntity(data, contentType));
             return this;
         }
@@ -270,6 +273,15 @@ public class DefaultRestClient implements RestClient {
         public RestClientDataCall parametersEncoding(String charset) {
             this.charset = Charset.forName(charset);
             return this;
+        }
+
+        private void notNullCheck(Object data, ContentType ct) {
+            if (data == null) {
+                throw new IllegalArgumentException("Body data cannot be null.");
+            }
+            if (ct == null) {
+                throw new IllegalArgumentException("Body content-type must be set.");
+            }
         }
     }
 }
