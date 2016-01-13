@@ -1,5 +1,8 @@
 # Http Rest Client
-It supports **json** by [JsonPath](https://github.com/jayway/JsonPath) and **xml** by [XPath](https://docs.oracle.com/javase/tutorial/jaxp/xslt/xpath.html) responses.
+RestClient that parses:
+ * **json** by [JsonPath](https://github.com/jayway/JsonPath)
+ * **xml** by [XPath](https://docs.oracle.com/javase/tutorial/jaxp/xslt/xpath.html)
+ * **html** by [jsoup](http://jsoup.org/)
 
 ## Features
  * Support for cookies

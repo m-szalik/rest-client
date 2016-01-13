@@ -2,6 +2,7 @@ package org.jsoftware.restclient;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
+import org.jsoup.select.Elements;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
@@ -66,6 +67,9 @@ public interface RestClientResponse extends Serializable {
      * @throws PathNotFoundException if requested path cannot be found
      */
     String xPath(String xPath) throws IOException, XPathExpressionException, PathNotFoundException, InvalidContentException;
+
+    Elements html(String jQueryExpression) throws IOException;
+
 
     /**
      * Dump response to PrintStream

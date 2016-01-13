@@ -2,10 +2,13 @@ package org.jsoftware.restclient.impl;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.jsoftware.restclient.InvalidContentException;
 import org.jsoftware.restclient.PathNotFoundException;
 import org.jsoftware.restclient.RestClientResponse;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -31,14 +34,18 @@ import java.io.StringReader;
 public abstract class AbstractStandardRestClientResponse implements RestClientResponse {
     private DocumentContext json;
     private Document xmlDocument;
+    private org.jsoup.nodes.Document htmlDocument;
 
 
     @Override
     public synchronized Object json(String path) throws IOException, PathNotFoundException {
         if (json == null) {
-            json = JsonPath.parse(getContent());
-            if (json.json() instanceof CharSequence) {
-                throw new InvalidContentException("Content is not valid JSON document.", getContent(), null);
+            String content = getContent();
+            if (! StringUtils.isBlank(content)) {
+                json = JsonPath.parse(content);
+            }
+            if (json == null || json.json() instanceof CharSequence) {
+                throw new InvalidContentException("Content is not valid JSON document.", getContent(), StringUtils.isBlank(content) ? new BlankContentException() : null);
             }
         }
         try {
@@ -53,9 +60,11 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
         if (xmlDocument == null) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
+            String content = getContent();
             try {
-                xmlDocument = builder.parse(new InputSource(new StringReader(getContent())));
-            } catch (SAXException e) {
+                checkNotBlank(content);
+                xmlDocument = builder.parse(new InputSource(new StringReader(content)));
+            } catch (SAXException|BlankContentException e) {
                 throw new InvalidContentException("Content is not valid XML document.", getContent(), e);
             }
         }
@@ -68,6 +77,7 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
         }
         return expr;
     }
+
 
 
     @Override
@@ -93,6 +103,18 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
     }
 
     @Override
+    public synchronized Elements html(String jQueryExpression) throws IOException {
+        if (htmlDocument == null) {
+            String content = getContent();
+            if (StringUtils.isBlank(content) || ! StringUtils.containsIgnoreCase(content, "<html")) {
+                throw new InvalidContentException("Content is not valid HTML document.", content, StringUtils.isBlank(content) ? new BlankContentException() : null);
+            }
+            htmlDocument = Jsoup.parse(content);
+        }
+        return htmlDocument.select(jQueryExpression);
+    }
+
+    @Override
     public void dump(boolean withHeaders, PrintStream to) throws IOException {
         StringBuilder s = new StringBuilder();
         s.append(getStatusLine()).append('\n');
@@ -103,5 +125,15 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
         }
         s.append(getContent());
         to.append(s).flush();
+    }
+
+    private static void checkNotBlank(String content) throws BlankContentException {
+        if (StringUtils.isBlank(content)) {
+            throw new BlankContentException();
+        }
+    }
+
+
+    private static class BlankContentException extends Exception {
     }
 }

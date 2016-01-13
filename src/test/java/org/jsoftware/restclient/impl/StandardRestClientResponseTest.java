@@ -1,20 +1,33 @@
 package org.jsoftware.restclient.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.jsoftware.restclient.InvalidContentException;
 import org.jsoftware.restclient.PathNotFoundException;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  */
 public class StandardRestClientResponseTest {
     private static final String JSON = "{\"num\":3, \"bool\":true, \"str\":\"string value\"}";
     private static final String XML = "<store><item name=\"iname\" id=\"123\">icontent</item></store>";
+    private static final String HTML;
+
+    static {
+        try(InputStream in = StandardRestClientResponseTest.class.getResourceAsStream("standardRestClientResponseTest.html")) {
+            HTML = IOUtils.toString(in);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+    }
 
     @Test(expected = InvalidContentException.class)
     public void testJsonInvalidContent() throws Exception {
@@ -26,6 +39,25 @@ public class StandardRestClientResponseTest {
         new TestStandardRestClientResponse("trash").xPath("/");
     }
 
+    @Test(expected = InvalidContentException.class)
+    public void testHTMLInvalidContent() throws Exception {
+        new TestStandardRestClientResponse("trash").html("div");
+    }
+
+    @Test(expected = InvalidContentException.class)
+    public void testJsonInvalidContentNull() throws Exception {
+        new TestStandardRestClientResponse(null).json("$.num");
+    }
+
+    @Test(expected = InvalidContentException.class)
+    public void testXMLInvalidContentNull() throws Exception {
+        new TestStandardRestClientResponse(null).xPath("/");
+    }
+
+    @Test(expected = InvalidContentException.class)
+    public void testHTMLInvalidContentNull() throws Exception {
+        new TestStandardRestClientResponse(null).html("div");
+    }
 
     @Test
     public void testJsonNumber() throws Exception {
@@ -82,6 +114,21 @@ public class StandardRestClientResponseTest {
     @Test(expected = PathNotFoundException.class)
     public void testXMLNotExistingAttribute() throws Exception {
         new TestStandardRestClientResponse(XML).xPath("/store/item/@notexisting", XPathConstants.NUMBER);
+    }
+
+    @Test
+    public void testHTMLById() throws Exception {
+        Elements elements = new TestStandardRestClientResponse(HTML).html("#mySpan");
+        Assert.assertEquals(1, elements.size());
+        Element element = elements.get(0);
+        Assert.assertEquals("mySpanContent", element.text());
+        Assert.assertEquals("attrVal", element.attr("attr"));
+    }
+
+    @Test
+    public void testHTMLByClass() throws Exception {
+        Elements elements = new TestStandardRestClientResponse(HTML).html(".myList li");
+        Assert.assertEquals(2, elements.size());
     }
 
 
