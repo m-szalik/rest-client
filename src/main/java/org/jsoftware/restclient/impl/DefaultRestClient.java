@@ -235,7 +235,7 @@ public class DefaultRestClient implements RestClient {
         protected void applyParameters(M method, RestClientPlugin.PluginContext ctx, Map<String, String[]> params) {
             String uri = ctx.getURI();
             boolean hasParam = uri.contains("?");
-            StringBuilder sb = new StringBuilder(method.getURI().toASCIIString());
+            StringBuilder sb = new StringBuilder(uri);
             for(Map.Entry<String,String[]> x : params.entrySet()) {
                 final String name = encode(x.getKey());
                 for(String val : x.getValue()) {
@@ -243,7 +243,7 @@ public class DefaultRestClient implements RestClient {
                     hasParam = true;
                 }
             }
-            ctx.setURI(uri);
+            ctx.setURI(sb.toString());
         }
     }
 
