@@ -2,8 +2,10 @@ package org.jsoftware.restclient.impl;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
+import org.jsoftware.restclient.BinaryContent;
 import org.jsoftware.restclient.InvalidContentException;
 import org.jsoftware.restclient.PathNotFoundException;
 import org.jsoftware.restclient.RestClientResponse;
@@ -24,6 +26,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 
@@ -35,6 +38,19 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
     private DocumentContext json;
     private Document xmlDocument;
     private org.jsoup.nodes.Document htmlDocument;
+    private String textContent;
+
+    @Override
+    public synchronized String getContent() throws IOException {
+        if (textContent == null) {
+            try(BinaryContent bc = getBinaryContent()) {
+                try (InputStream ins = bc.getStream()){
+                    textContent = IOUtils.toString(ins);
+                }
+            }
+        }
+        return textContent;
+    }
 
 
     @Override

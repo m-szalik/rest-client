@@ -38,7 +38,7 @@ public class ClientEndToEndTest {
     @Test
     public void testDownloadBinaryData() throws Exception {
         RestClientResponse resp = client.get("http://jsoftware.org/wp-content/themes/twentyeleven/images/headers/chessboard.jpg").execute();
-        InputStream in = resp.getInputStream();
+        InputStream in = resp.getBinaryContent().getStream();
         try {
             byte[] buff = IOUtils.toByteArray(in);
             String md5Hex = DigestUtils.md5Hex(buff);
@@ -46,5 +46,16 @@ public class ClientEndToEndTest {
         } finally {
             IOUtils.closeQuietly(in);
         }
+    }
+
+    @Test
+    public void testReadContentTwice() throws Exception {
+        RestClientResponse resp = client.get("http://jsoftware.org").execute();
+        BinaryContent binaryContent = resp.getBinaryContent();
+        InputStream ins = binaryContent.getStream();
+        String s1 = IOUtils.toString(ins);
+        IOUtils.closeQuietly(ins);
+//        String s2 = resp.getContent();
+//        Assert.assertEquals(s1, s2);
     }
 }

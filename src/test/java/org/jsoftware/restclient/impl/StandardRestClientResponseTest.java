@@ -43,21 +43,6 @@ public class StandardRestClientResponseTest {
         new TestStandardRestClientResponse("trash").html("div");
     }
 
-    @Test(expected = InvalidContentException.class)
-    public void testJsonInvalidContentNull() throws Exception {
-        new TestStandardRestClientResponse(null).json("$.num");
-    }
-
-    @Test(expected = InvalidContentException.class)
-    public void testXMLInvalidContentNull() throws Exception {
-        new TestStandardRestClientResponse(null).xPath("/");
-    }
-
-    @Test(expected = InvalidContentException.class)
-    public void testHTMLInvalidContentNull() throws Exception {
-        new TestStandardRestClientResponse(null).html("div");
-    }
-
     @Test
     public void testJsonNumber() throws Exception {
         Object obj = new TestStandardRestClientResponse(JSON).json("$.num");

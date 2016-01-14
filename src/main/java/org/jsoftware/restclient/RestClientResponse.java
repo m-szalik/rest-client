@@ -7,7 +7,6 @@ import org.jsoup.select.Elements;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Optional;
@@ -29,11 +28,10 @@ public interface RestClientResponse extends Serializable {
     Header[] getAllHeaders();
 
     /**
-     * Remember to close InputStream.
-     * @return http response body
+     * @return http response body as binary stream
      * @throws IOException when content is not available
      */
-    InputStream getInputStream() throws IOException;
+    BinaryContent getBinaryContent() throws IOException;
 
     /**
      * @throws IOException if http response cannot be read or if content was already used by #getInputStream

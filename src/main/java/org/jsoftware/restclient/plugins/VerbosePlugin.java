@@ -6,12 +6,14 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.jsoftware.restclient.BinaryContent;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -66,7 +68,21 @@ public class VerbosePlugin implements RestClientPlugin {
                 }
             }
         },
-
+        RESPONSE_BODY {
+            @Override
+            void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
+                if (ctx.isResponseAvailable()) {
+                    BinaryContent bc = ctx.getResponse().getBinaryContent();
+                    if (bc.isRepeatable()) {
+                        try (InputStream ins = bc.getStream()){
+                            appendBody(buff, "< ", IOUtils.toString(ins));
+                        }
+                    } else {
+                        buff.append("* Cannot display response content.\n");
+                    }
+                }
+            }
+        },
         RESPONSE_TIME {
             @Override
             void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
@@ -144,6 +160,7 @@ public class VerbosePlugin implements RestClientPlugin {
             long time = System.currentTimeMillis() - startTs;
             append(buff, context, RenderingOption.RESPONSE_STATUS, null);
             append(buff, context, RenderingOption.RESPONSE_HEADERS, null);
+            append(buff, context, RenderingOption.RESPONSE_BODY, null);
             append(buff, context, RenderingOption.RESPONSE_TIME, time);
             print(buff, error);
         }

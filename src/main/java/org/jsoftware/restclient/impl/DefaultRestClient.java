@@ -3,7 +3,14 @@ package org.jsoftware.restclient.impl;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -13,14 +20,30 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.jsoftware.restclient.*;
+import org.jsoftware.restclient.BaseRestClientCall;
+import org.jsoftware.restclient.RestClient;
+import org.jsoftware.restclient.RestClientCall;
+import org.jsoftware.restclient.RestClientDataCall;
+import org.jsoftware.restclient.RestClientFeature;
+import org.jsoftware.restclient.RestClientPlugin;
+import org.jsoftware.restclient.RestClientResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Deafult implementation of RestClient
@@ -148,12 +171,12 @@ public class DefaultRestClient implements RestClient {
 
         @Override
         public RestClientResponse execute() throws IOException {
-            if (! parameters.isEmpty()) {
-                applyParameters(method, parameters);
-            }
             PluginContextImpl ctx = new PluginContextImpl();
             ctx.setRequest(method);
             ctx.setURI(uri);
+            if (! parameters.isEmpty()) {
+                applyParameters(method, ctx, parameters);
+            }
             InvocationChain chain = InvocationChain.create(plugins, ctx, () -> {
                 try {
                     this.method.setURI(new URL(ctx.getURI()).toURI());
@@ -198,7 +221,7 @@ public class DefaultRestClient implements RestClient {
             return (C) this;
         }
 
-        protected abstract void applyParameters(M method, Map<String,String[]> params);
+        protected abstract void applyParameters(M method, RestClientPlugin.PluginContext ctx, Map<String, String[]> params);
 
     }
 
@@ -209,8 +232,8 @@ public class DefaultRestClient implements RestClient {
         }
 
         @Override
-        protected void applyParameters(M method, Map<String,String[]> params) {
-            String uri = method.getURI().toASCIIString();
+        protected void applyParameters(M method, RestClientPlugin.PluginContext ctx, Map<String, String[]> params) {
+            String uri = ctx.getURI();
             boolean hasParam = uri.contains("?");
             StringBuilder sb = new StringBuilder(method.getURI().toASCIIString());
             for(Map.Entry<String,String[]> x : params.entrySet()) {
@@ -220,11 +243,7 @@ public class DefaultRestClient implements RestClient {
                     hasParam = true;
                 }
             }
-            try {
-                method.setURI(new URI(sb.toString()));
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException("Invalid uri '" + sb + "'", e);
-            }
+            ctx.setURI(uri);
         }
     }
 
@@ -237,7 +256,7 @@ public class DefaultRestClient implements RestClient {
         }
 
         @Override
-        protected void applyParameters(M method, Map<String, String[]> params) {
+        protected void applyParameters(M method, RestClientPlugin.PluginContext ctx, Map<String, String[]> params) {
             List<NameValuePair> list = new LinkedList<>();
             for(Map.Entry<String,String[]> x : params.entrySet()) {
                 final String name = x.getKey();

@@ -6,25 +6,32 @@ import org.apache.http.StatusLine;
 import org.apache.http.message.BasicStatusLine;
 import org.jsoftware.restclient.impl.AbstractStandardRestClientResponse;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * @author szalik
  */
 public class TestStandardRestClientResponse extends AbstractStandardRestClientResponse {
     private final StatusLine statusLine;
-    private final String content;
     private final Header[] headers;
+    private final TestStandardRestClientResponseBinaryContent binaryContent;
+
 
     public TestStandardRestClientResponse(String content) {
         this(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "Code " + 200), content);
     }
 
-    public TestStandardRestClientResponse(StatusLine statusLine, String content, Header... headers) {
+    public TestStandardRestClientResponse(StatusLine statusLine, byte[] content, boolean contentRepeatable, Header... headers) {
         this.statusLine = statusLine;
-        this.content = content;
         this.headers = headers == null ? new Header[]{} : headers;
+        this.binaryContent = new TestStandardRestClientResponseBinaryContent(content, contentRepeatable);
+    }
+
+    public TestStandardRestClientResponse(BasicStatusLine statusLine, String content, Header... headers) {
+        this(statusLine, content.getBytes(), true, headers);
     }
 
     @Override
@@ -38,13 +45,49 @@ public class TestStandardRestClientResponse extends AbstractStandardRestClientRe
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
-        throw new RuntimeException("Not supported");
+    public BinaryContent getBinaryContent() throws IOException {
+        return binaryContent;
+    }
+
+}
+
+class TestStandardRestClientResponseBinaryContent implements BinaryContent {
+    private final byte[] data;
+    private final boolean repeatable;
+    private boolean inUse;
+
+    TestStandardRestClientResponseBinaryContent(byte[] data, boolean repeatable) {
+        this.data = data;
+        this.repeatable = repeatable;
     }
 
     @Override
-    public String getContent() throws IOException {
-        return content;
+    public InputStream getStream() throws IOException {
+        if (! repeatable && inUse) {
+            throw new IOException("Cannot read stream twice.");
+        }
+        inUse = true;
+        return new ByteArrayInputStream(data);
+    }
+
+    @Override
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    @Override
+    public Optional<Long> getLength() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getContentType() {
+        return Optional.empty();
+    }
+
+    @Override
+    public void close() {
+
     }
 
 }
