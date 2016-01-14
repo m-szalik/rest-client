@@ -1,30 +1,14 @@
 package org.jsoftware.restclient.impl;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
-import org.jsoftware.restclient.RestClientResponse;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
 
 /**
  * @author szalik
@@ -32,6 +16,7 @@ import java.io.StringReader;
 class StandardRestClientResponse extends AbstractStandardRestClientResponse {
     private final HttpResponse httpResponse;
     private String content;
+    private boolean inputStreamUsed;
 
     StandardRestClientResponse(HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
@@ -43,6 +28,16 @@ class StandardRestClientResponse extends AbstractStandardRestClientResponse {
     }
 
     @Override
+    public InputStream getInputStream() throws IOException {
+        HttpEntity data = httpResponse.getEntity();
+        if (data == null) {
+            throw new IOException("No content can be found.");
+        }
+        InputStream is = data.getContent();
+        return is;
+    }
+
+    @Override
     public StatusLine getStatusLine() {
         return httpResponse.getStatusLine();
     }
@@ -50,6 +45,9 @@ class StandardRestClientResponse extends AbstractStandardRestClientResponse {
     @Override
     public synchronized String getContent() throws IOException {
         if (content == null) {
+            if (inputStreamUsed) {
+                throw new IOException("Data already used by getInput()");
+            }
             HttpEntity data = httpResponse.getEntity();
             try {
                 InputStream is = data.getContent();

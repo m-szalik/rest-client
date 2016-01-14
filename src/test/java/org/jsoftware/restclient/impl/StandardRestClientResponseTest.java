@@ -1,10 +1,9 @@
 package org.jsoftware.restclient.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.StatusLine;
 import org.jsoftware.restclient.InvalidContentException;
 import org.jsoftware.restclient.PathNotFoundException;
+import org.jsoftware.restclient.TestStandardRestClientResponse;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Assert;
@@ -131,26 +130,4 @@ public class StandardRestClientResponseTest {
         Assert.assertEquals(2, elements.size());
     }
 
-
-
-    class TestStandardRestClientResponse extends AbstractStandardRestClientResponse {
-        private final String content;
-
-        TestStandardRestClientResponse(String content) {this.content = content;}
-
-        @Override
-        public StatusLine getStatusLine() {
-            throw new AssertionError("Not implemented");
-        }
-
-        @Override
-        public Header[] getAllHeaders() {
-            return new Header[0];
-        }
-
-        @Override
-        public String getContent() throws IOException {
-            return content;
-        }
-    }
 }

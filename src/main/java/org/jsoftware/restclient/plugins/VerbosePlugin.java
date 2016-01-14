@@ -66,14 +66,7 @@ public class VerbosePlugin implements RestClientPlugin {
                 }
             }
         },
-        RESPONSE_BODY {
-            @Override
-            void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
-                if (ctx.isResponseAvailable()) {
-                    appendBody(buff, "< ", ctx.getResponse().getContent());
-                }
-            }
-        },
+
         RESPONSE_TIME {
             @Override
             void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
@@ -151,7 +144,6 @@ public class VerbosePlugin implements RestClientPlugin {
             long time = System.currentTimeMillis() - startTs;
             append(buff, context, RenderingOption.RESPONSE_STATUS, null);
             append(buff, context, RenderingOption.RESPONSE_HEADERS, null);
-            append(buff, context, RenderingOption.RESPONSE_BODY, null);
             append(buff, context, RenderingOption.RESPONSE_TIME, time);
             print(buff, error);
         }

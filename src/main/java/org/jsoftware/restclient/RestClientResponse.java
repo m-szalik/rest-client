@@ -7,8 +7,10 @@ import org.jsoup.select.Elements;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * Http response
@@ -27,7 +29,14 @@ public interface RestClientResponse extends Serializable {
     Header[] getAllHeaders();
 
     /**
-     * @throws IOException if http response cannot be read
+     * Remember to close InputStream.
+     * @return http response body
+     * @throws IOException when content is not available
+     */
+    InputStream getInputStream() throws IOException;
+
+    /**
+     * @throws IOException if http response cannot be read or if content was already used by #getInputStream
      * @return response body as String
      */
     String getContent() throws IOException;
@@ -86,5 +95,21 @@ public interface RestClientResponse extends Serializable {
      */
     default void dump(boolean withHeaders) throws IOException {
         dump(withHeaders, System.out);
+    }
+
+    /**
+     * @param headerName header name
+     * @return response header value
+     */
+    default Optional<String> getHeader(String headerName) {
+        Header[] headers = getAllHeaders();
+        if (headers != null) {
+            for(Header h:headers) {
+                if (headerName.equalsIgnoreCase(h.getName())) {
+                    return Optional.of(h.getValue());
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
