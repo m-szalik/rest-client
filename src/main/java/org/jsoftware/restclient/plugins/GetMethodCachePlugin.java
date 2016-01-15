@@ -58,7 +58,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
     @Override
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
         if ("GET".equalsIgnoreCase(context.getRequest().getMethod())) {
-            String key = context.getRequest().getURI().toString();
+            String key = context.getURI();
             CacheEntry ce = cache.get(key);
             long now = clock.millis();
             boolean fetch = ce == null || ce.getTimeout() < now;
