@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.jsoftware</groupId>
             <artifactId>jsoftware-utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
