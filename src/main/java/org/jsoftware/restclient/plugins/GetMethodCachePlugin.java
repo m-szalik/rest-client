@@ -4,13 +4,11 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
+import org.jsoftware.utils.SimpleCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.time.Clock;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -19,9 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class GetMethodCachePlugin implements RestClientPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final long timeoutMillis;
-    private final MyLRUCache<String,CacheEntry> cache;
-    private final Clock clock;
+    private final SimpleCache<String,RestClientResponse> cache;
 
     private final AtomicLong hits = new AtomicLong(), misses = new AtomicLong();
 
@@ -31,9 +27,7 @@ public class GetMethodCachePlugin implements RestClientPlugin {
      * @param clock to get <code>now</code>
      */
     protected GetMethodCachePlugin(long timeoutMillis, int size, Clock clock) {
-        this.timeoutMillis = timeoutMillis;
-        this.cache = new MyLRUCache<>(size);
-        this.clock = clock;
+        this.cache = new SimpleCache<String, RestClientResponse>(timeoutMillis, size, clock) {};
     }
 
 
@@ -59,15 +53,14 @@ public class GetMethodCachePlugin implements RestClientPlugin {
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
         if ("GET".equalsIgnoreCase(context.getRequest().getMethod())) {
             String key = context.getURI();
-            CacheEntry ce = cache.get(key);
-            long now = clock.millis();
-            boolean fetch = ce == null || ce.getTimeout() < now;
+            RestClientResponse cr = cache.get(key);
+            boolean fetch = cr == null;
             if (! fetch) {
                 fetch = headerEq(context.getRequest(), "Cache-Control", "no-cache") || headerEq(context.getRequest(), "Pragma", "no-cache");
             }
             if (fetch) {
                 if (logger.isTraceEnabled()) {
-                    if (ce == null) {
+                    if (cr == null) {
                         logger.trace("Response for {} not found in cache.", context.getRequest());
                     } else {
                         logger.trace("Response for {} found in cache, but it is expired or requested by setting http request header.", context.getRequest());
@@ -79,12 +72,12 @@ public class GetMethodCachePlugin implements RestClientPlugin {
                 if (restClientResponse == null) {
                     throw new IllegalStateException("Http Response is null for " + context.getRequest());
                 }
-                cache.put(key, new CacheEntry(now+timeoutMillis, restClientResponse));
+                cache.put(key, restClientResponse);
                 logger.trace("Response for {} put into cache.", context.getRequest());
             } else {
                 logger.trace("Response for {} fetched from cache.", context.getRequest());
                 hits.incrementAndGet();
-                context.setResponse(ce.getResponse());
+                context.setResponse(cr);
             }
         } else {
             chain.continueChain();
@@ -149,34 +142,3 @@ public class GetMethodCachePlugin implements RestClientPlugin {
 }
 
 
-
-class MyLRUCache<K, V> extends LinkedHashMap<K, V> {
-    private final int cacheSize;
-
-    public MyLRUCache(int cacheSize) {
-        super(cacheSize, 0.75f, true);
-        this.cacheSize = cacheSize;
-    }
-
-    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return size() >= cacheSize;
-    }
-}
-
-class CacheEntry implements Serializable {
-    private final long timeout;
-    private final RestClientResponse response;
-
-    CacheEntry(long timeout, RestClientResponse response) {
-        this.timeout = timeout;
-        this.response = response;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public RestClientResponse getResponse() {
-        return response;
-    }
-}
