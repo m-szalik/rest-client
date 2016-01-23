@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -27,7 +28,12 @@ public class GetMethodCachePlugin implements RestClientPlugin {
      * @param clock to get <code>now</code>
      */
     protected GetMethodCachePlugin(long timeoutMillis, int size, Clock clock) {
-        this.cache = new SimpleCache<String, RestClientResponse>(timeoutMillis, size, clock) {};
+        this.cache = new SimpleCache<String, RestClientResponse>(timeoutMillis, size) {
+            @Override
+            protected Instant now() {
+                return clock.instant();
+            }
+        };
     }
 
 
