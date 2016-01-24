@@ -1,7 +1,6 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.http.Header;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -11,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  */
 public class CustomRequestHeaderPluginTest extends AbstractPluginTest {
-    private CustomRequestHeaderPlugin plugin = new CustomRequestHeaderPlugin("tName", "tValue");
+    private final CustomRequestHeaderPlugin plugin = new CustomRequestHeaderPlugin("tName", "tValue");
 
     @Test
     public void testAddHeader() throws Exception {

@@ -72,7 +72,7 @@ public class StandardRestClientResponseTest {
     @Test
     public void testXMLAttribute() throws Exception {
         Object obj = new TestStandardRestClientResponse(XML).xPath("/store/item/@name");
-        Assert.assertTrue(obj instanceof String);
+        Assert.assertTrue(obj != null);
         Assert.assertEquals("iname", obj);
     }
 
@@ -86,7 +86,7 @@ public class StandardRestClientResponseTest {
     @Test
     public void testXMLTextContent() throws Exception {
         Object obj = new TestStandardRestClientResponse(XML).xPath("/store/item");
-        Assert.assertTrue(obj instanceof String);
+        Assert.assertTrue(obj != null);
         Assert.assertEquals("icontent", obj);
     }
 
@@ -106,7 +106,7 @@ public class StandardRestClientResponseTest {
         Assert.assertEquals(1, elements.size());
         Element element = elements.get(0);
         Assert.assertEquals("mySpanContent", element.text());
-        Assert.assertEquals("attrVal", element.attr("attr"));
+        Assert.assertEquals("attrVal", element.attr("attr-my"));
     }
 
     @Test

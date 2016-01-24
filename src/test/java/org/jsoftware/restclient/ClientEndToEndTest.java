@@ -53,9 +53,7 @@ public class ClientEndToEndTest {
         RestClientResponse resp = client.get("http://jsoftware.org").execute();
         BinaryContent binaryContent = resp.getBinaryContent();
         InputStream ins = binaryContent.getStream();
-        String s1 = IOUtils.toString(ins);
+        IOUtils.toString(ins);
         IOUtils.closeQuietly(ins);
-//        String s2 = resp.getContent();
-//        Assert.assertEquals(s1, s2);
     }
 }

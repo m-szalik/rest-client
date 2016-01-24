@@ -104,9 +104,7 @@ public class DefaultRestClient implements RestClient {
     @Override
     public List<RestClientPlugin> getPlugins() {
         List<RestClientPlugin> list = new LinkedList<>();
-        for(RestClientPlugin plugin : plugins) {
-            list.add(plugin);
-        }
+        Collections.addAll(list, plugins);
         return Collections.unmodifiableList(list);
     }
 
@@ -161,9 +159,9 @@ public class DefaultRestClient implements RestClient {
     abstract class AbstractRestClientCall<C extends BaseRestClientCall,M extends HttpRequestBase> implements BaseRestClientCall<C> {
         private final Map<String,String[]> parameters = new LinkedHashMap<>();
         protected final M method;
-        private String uri;
+        private final String uri;
 
-        protected AbstractRestClientCall(String uri, M method) throws MalformedURLException {
+        protected AbstractRestClientCall(String uri, M method) {
             this.method = method;
             this.uri = uri;
         }

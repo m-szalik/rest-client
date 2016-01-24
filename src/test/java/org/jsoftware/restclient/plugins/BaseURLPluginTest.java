@@ -1,6 +1,5 @@
 package org.jsoftware.restclient.plugins;
 
-import org.jsoftware.restclient.RestClientPlugin;
 import org.junit.Before;
 import org.junit.Test;
 
