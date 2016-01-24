@@ -10,9 +10,9 @@ import java.net.URL;
 /**
  * If request's url doesn't start with <code>http://</code> or <code>https://</code> then add baseURL as URL prefix.
  * <p>
- *     Example:<br/>
+ *     Example:<br>
  *     if baseURL equals &quot;http://somewhere.com/api&quot;
- *     than <code>restClient.get(&quot;users&quot;)</code> will be rewrite to &quot;http://somewhere.com/api/method&quot;.<br/>
+ *     than <code>restClient.get(&quot;users&quot;)</code> will be rewrite to &quot;http://somewhere.com/api/method&quot;.<br>
  *     <strong>Plugins are ordered as it was added so remember to put this plugin at the begging.</strong>
  * </p>
  * @author szalik

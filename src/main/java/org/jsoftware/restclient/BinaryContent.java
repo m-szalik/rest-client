@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface BinaryContent extends AutoCloseable {
 
     /**
+     * @throws IOException io error occurred
      * @return binary data stream
      */
     InputStream getStream() throws IOException;
