@@ -1,6 +1,7 @@
 # Http Rest Client
 
 [![Join the chat at https://gitter.im/m-szalik/rest-client](https://badges.gitter.im/m-szalik/rest-client.svg)](https://gitter.im/m-szalik/rest-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 RestClient that parses:
  * **json** by [JsonPath](https://github.com/jayway/JsonPath)
  * **xml** by [XPath](https://docs.oracle.com/javase/tutorial/jaxp/xslt/xpath.html)
