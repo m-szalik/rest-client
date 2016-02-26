@@ -1,6 +1,7 @@
 # Http Rest Client
 
 [![Join the chat at https://gitter.im/m-szalik/rest-client](https://badges.gitter.im/m-szalik/rest-client.svg)](https://gitter.im/m-szalik/rest-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/m-szalik/rest-client.svg?branch=master)](https://travis-ci.org/m-szalik/rest-client)
 
 RestClient that parses:
  * **json** by [JsonPath](https://github.com/jayway/JsonPath)
