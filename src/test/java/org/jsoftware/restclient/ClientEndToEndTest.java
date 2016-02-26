@@ -2,7 +2,7 @@ package org.jsoftware.restclient;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
-import org.jsoftware.restclient.impl.DefaultRestClient;
+import org.jsoftware.restclient.impl.ApacheHttpClientImplRestClient;
 import org.jsoftware.restclient.plugins.VerbosePlugin;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +21,7 @@ public class ClientEndToEndTest {
 
     @Before
     public void setUp() throws Exception {
-        client = new DefaultRestClient(new VerbosePlugin(true, new PrintStream[]{}));
+        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {new VerbosePlugin(true, new PrintStream[]{}) });
     }
 
     @Test

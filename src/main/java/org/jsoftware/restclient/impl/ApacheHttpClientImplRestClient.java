@@ -46,38 +46,21 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Deafult implementation of RestClient
+ * RestClient implementation based on Apache http-client
  * @author szalik
  */
-public class DefaultRestClient implements RestClient {
+public class ApacheHttpClientImplRestClient implements RestClient {
     private final CloseableHttpClient httpClient;
     private final HttpClientContext httpClientContext;
     private RestClientPlugin[] plugins = new RestClientPlugin[0];
 
 
     /**
-     * Instance with features enabled
-     * @param features features to enable
-     */
-    public DefaultRestClient(RestClientFeature[] features) {
-        this(features, new RestClientPlugin[0]);
-    }
-
-    /**
-     * No special features is enabled.
-     * @param plugins plugins to enable
-     * @see #setPlugins(List)
-     */
-    public DefaultRestClient(RestClientPlugin... plugins) {
-        this(new RestClientFeature[0], plugins);
-    }
-
-    /**
      * @param features features to enable
      * @param plugins plugins to be added
      * @see #setPlugins(List)
      */
-    public DefaultRestClient(RestClientFeature[] features, RestClientPlugin... plugins) {
+    public ApacheHttpClientImplRestClient(RestClientFeature[] features, RestClientPlugin[] plugins) {
         httpClient = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient").build();
         httpClientContext = HttpClientContext.create();
         Set<RestClientFeature> f = new HashSet<>(Arrays.asList(features));
@@ -89,12 +72,6 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
-    /**
-     * Instance with no features enabled and no plugins
-     */
-    public DefaultRestClient() {
-        this(new RestClientFeature[0]);
-    }
 
     @Override
     public final void setPlugins(List<RestClientPlugin> plugins) {
@@ -224,7 +201,7 @@ public class DefaultRestClient implements RestClient {
     }
 
 
-    class RestClientCallImpl<M extends HttpRequestBase> extends DefaultRestClient.AbstractRestClientCall<RestClientCall,M> implements RestClientCall {
+    class RestClientCallImpl<M extends HttpRequestBase> extends ApacheHttpClientImplRestClient.AbstractRestClientCall<RestClientCall,M> implements RestClientCall {
         RestClientCallImpl(String url, M method) throws MalformedURLException {
             super(url, method);
         }
@@ -246,7 +223,7 @@ public class DefaultRestClient implements RestClient {
     }
 
 
-    class RestClientDataCallImpl<M extends HttpEntityEnclosingRequestBase> extends DefaultRestClient.AbstractRestClientCall<RestClientDataCall,M> implements RestClientDataCall {
+    class RestClientDataCallImpl<M extends HttpEntityEnclosingRequestBase> extends ApacheHttpClientImplRestClient.AbstractRestClientCall<RestClientDataCall,M> implements RestClientDataCall {
         private Charset charset;
         RestClientDataCallImpl(String url, M method) throws MalformedURLException {
             super(url, method);
