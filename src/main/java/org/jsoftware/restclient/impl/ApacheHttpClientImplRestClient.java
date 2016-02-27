@@ -37,7 +37,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -58,7 +57,6 @@ public class ApacheHttpClientImplRestClient implements RestClient {
     /**
      * @param features features to enable
      * @param plugins plugins to be added
-     * @see #setPlugins(List)
      */
     public ApacheHttpClientImplRestClient(RestClientFeature[] features, RestClientPlugin[] plugins) {
         httpClient = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient").build();
@@ -70,19 +68,6 @@ public class ApacheHttpClientImplRestClient implements RestClient {
         if (plugins != null) {
             this.plugins = plugins;
         }
-    }
-
-
-    @Override
-    public final void setPlugins(List<RestClientPlugin> plugins) {
-        this.plugins = plugins == null ? new RestClientPlugin[0] : plugins.toArray(new RestClientPlugin[plugins.size()]);
-    }
-
-    @Override
-    public List<RestClientPlugin> getPlugins() {
-        List<RestClientPlugin> list = new LinkedList<>();
-        Collections.addAll(list, plugins);
-        return Collections.unmodifiableList(list);
     }
 
     @Override

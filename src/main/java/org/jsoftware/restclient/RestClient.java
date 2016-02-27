@@ -1,23 +1,11 @@
 package org.jsoftware.restclient;
 
 import java.net.MalformedURLException;
-import java.util.List;
 
 /**
  * @author szalik
   */
 public interface RestClient extends AutoCloseable {
-
-    /**
-     * Plugins are executed in order so the order of plugins in the list does matter
-     * @param plugins plugins to be used
-     */
-    void setPlugins(List<RestClientPlugin> plugins);
-
-    /**
-     * @return list of enabled plugins
-     */
-    List<RestClientPlugin> getPlugins();
 
     /**
      * Prepare GET request
