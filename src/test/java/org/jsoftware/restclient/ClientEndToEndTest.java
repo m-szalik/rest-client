@@ -16,6 +16,7 @@ import java.io.PrintStream;
 import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
@@ -74,6 +75,18 @@ public class ClientEndToEndTest {
             resp.dump(false, new PrintStream(out));
             String str = new String(out.toByteArray()).trim();
             assertEquals("HTTP/1.1 200 OK\nMethod:GET", str);
+        }
+    }
+
+    @Test
+    public void testResponseDumpWithHeadres() throws Exception {
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            RestClientResponse resp = client.get(TEST_URL).execute();
+            resp.dump(true, new PrintStream(out));
+            String str = new String(out.toByteArray()).trim();
+            assertTrue(str.startsWith("HTTP/1.1 200 OK"));
+            assertTrue(str.contains("HEADER Date:"));
+            assertTrue(str.endsWith("Method:GET"));
         }
     }
 
