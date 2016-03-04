@@ -8,11 +8,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
@@ -28,6 +30,15 @@ public class ClientEndToEndTest {
     public void testJSoftware() throws Exception {
         RestClientResponse resp = client.get("http://jsoftware.org").execute();
         assertEquals(200, resp.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void testJSoftwareDump() throws Exception {
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            RestClientResponse resp = client.get("http://jsoftware.org").execute();
+            resp.dump(true, new PrintStream(out));
+            assertTrue(out.size() > 0);
+        }
     }
 
     @Test(expected = UnknownHostException.class)

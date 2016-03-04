@@ -10,6 +10,9 @@ import org.jsoftware.restclient.RestClientResponse;
 import org.jsoftware.restclient.TestStandardRestClientResponse;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.function.Function;
 
 /**
@@ -83,3 +86,25 @@ class TestPluginContext implements RestClientPlugin.PluginContext {
     }
 }
 
+class TestClock extends Clock {
+    private final ZoneId zoneId = ZoneId.systemDefault();
+    private Instant instant = Instant.now();
+    @Override
+    public ZoneId getZone() {
+        return zoneId;
+    }
+
+    @Override
+    public Clock withZone(ZoneId zone) {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public Instant instant() {
+        return instant;
+    }
+
+    public void setInstant(Instant instant) {
+        this.instant = instant;
+    }
+}

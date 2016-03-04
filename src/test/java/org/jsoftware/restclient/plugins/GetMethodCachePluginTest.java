@@ -5,14 +5,11 @@ import org.jsoftware.restclient.RestClientResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author szalik
@@ -44,6 +41,11 @@ public class GetMethodCachePluginTest extends AbstractPluginTest {
 
         assertEquals(value1, resp.getContent());
         assertEquals(1, counter.get());
+
+        // check stats
+        GetMethodCachePlugin.CacheStatistics cacheStatistics = plugin.getStatistics();
+        assertEquals(1, cacheStatistics.getHits());
+        assertEquals(1, cacheStatistics.getMisses());
     }
 
 
@@ -116,25 +118,3 @@ public class GetMethodCachePluginTest extends AbstractPluginTest {
     }
 }
 
-class TestClock extends Clock {
-    private final ZoneId zoneId = ZoneId.systemDefault();
-    private Instant instant = Instant.now();
-    @Override
-    public ZoneId getZone() {
-        return zoneId;
-    }
-
-    @Override
-    public Clock withZone(ZoneId zone) {
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public Instant instant() {
-        return instant;
-    }
-
-    public void setInstant(Instant instant) {
-        this.instant = instant;
-    }
-}
