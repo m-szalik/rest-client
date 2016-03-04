@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.jsoftware.restclient.RestClientResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,6 +116,21 @@ public class GetMethodCachePluginTest extends AbstractPluginTest {
             return stdResponse(200, UUID.randomUUID().toString());
         });
         assertEquals(2, counter.get());
+    }
+
+    @Test
+    public void testPostMethod() throws Exception {
+        HttpPost post = new HttpPost("http://story.com/my/");
+        final AtomicInteger counter = new AtomicInteger(0);
+        call(plugin, post, (r)->{
+            counter.incrementAndGet();
+            return stdResponse(200, UUID.randomUUID().toString());
+        });
+        call(plugin, post, (r)->{
+            counter.incrementAndGet();
+            return stdResponse(200, UUID.randomUUID().toString());
+        });
+        assertEquals(0, counter.get());
     }
 }
 

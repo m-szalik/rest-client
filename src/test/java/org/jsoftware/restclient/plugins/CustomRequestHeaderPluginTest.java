@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.http.Header;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -32,6 +33,28 @@ public class CustomRequestHeaderPluginTest extends AbstractPluginTest {
         assertTrue("Missing header", header3.isPresent());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidHeaderName() throws Exception {
+        new CustomRequestHeaderPlugin("", "val");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidHeaderValue() throws Exception {
+        new CustomRequestHeaderPlugin("hName", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidHeaderValueSet() throws Exception {
+        plugin.setHeaderValue("");
+    }
+
+    @Test
+    public void testEnableDisable() throws Exception {
+        plugin.enable();
+        Assert.assertTrue(plugin.isEnabled());
+        plugin.disable();
+        Assert.assertFalse(plugin.isEnabled());
+    }
 
     private Optional<Header> callAndFindHeader() throws Exception {
         final HeadersHolder headersHolder = new HeadersHolder();

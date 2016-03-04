@@ -29,4 +29,11 @@ public class RequestTimePluginTest extends AbstractPluginTest {
 
         Assert.assertEquals(3000, time.get());
     }
+
+    @Test
+    public void testDefaultConstructor() throws Exception {
+        RequestTimePlugin plugin = new RequestTimePlugin();
+        call(plugin, get("http://nowhere.com"), (r) -> stdResponse(200, "OK"));
+        // if no exception throw we are fine.
+    }
 }
