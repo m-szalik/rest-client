@@ -33,9 +33,15 @@ public class StandardRestClientResponseTest {
         new TestStandardRestClientResponse("trash").json("$.num");
     }
 
-    @Test(expected = InvalidContentException.class)
+    @Test
     public void testXMLInvalidContent() throws Exception {
-        new TestStandardRestClientResponse("trash").xPath("/");
+        final String content = "trash content";
+        try {
+            new TestStandardRestClientResponse(content).xPath("/");
+            Assert.fail("Exception expected");
+        } catch (InvalidContentException e) {
+            Assert.assertEquals(content, e.getContent());
+        }
     }
 
     @Test(expected = InvalidContentException.class)
@@ -90,14 +96,26 @@ public class StandardRestClientResponseTest {
         Assert.assertEquals("icontent", obj);
     }
 
-    @Test(expected = PathNotFoundException.class)
+    @Test
     public void testXMLNotExistingTag() throws Exception {
-        new TestStandardRestClientResponse(XML).xPath("/store/location");
+        final String path = "/store/location";
+        try {
+            new TestStandardRestClientResponse(XML).xPath(path);
+            Assert.fail("Exception expected");
+        } catch (PathNotFoundException e) {
+            Assert.assertEquals(path, e.getPath());
+        }
     }
 
-    @Test(expected = PathNotFoundException.class)
+    @Test
     public void testXMLNotExistingAttribute() throws Exception {
-        new TestStandardRestClientResponse(XML).xPath("/store/item/@notexisting", XPathConstants.NUMBER);
+        final String path = "/store/item/@notexisting";
+        try {
+            new TestStandardRestClientResponse(XML).xPath(path, XPathConstants.NUMBER);
+            Assert.fail("Exception expected");
+        } catch (PathNotFoundException e) {
+            Assert.assertEquals(path, e.getPath());
+        }
     }
 
     @Test

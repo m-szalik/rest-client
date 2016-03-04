@@ -2,6 +2,8 @@ package org.jsoftware.restclient;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
+import org.apache.http.entity.ContentType;
 import org.jsoftware.restclient.impl.ApacheHttpClientImplRestClient;
 import org.jsoftware.restclient.plugins.VerbosePlugin;
 import org.junit.Assert;
@@ -14,30 +16,64 @@ import java.io.PrintStream;
 import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  */
 public class ClientEndToEndTest {
+    private final static String TEST_URL = "http://jsoftware.org/wp-content/rest-client-test.php";
     private RestClient client;
 
     @Before
     public void setUp() throws Exception {
-        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {new VerbosePlugin(true, new PrintStream[]{}) });
+        PrintStream out = new PrintStream(new NullOutputStream());
+        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {new VerbosePlugin(true, new PrintStream[]{out}) });
     }
 
     @Test
-    public void testJSoftware() throws Exception {
-        RestClientResponse resp = client.get("http://jsoftware.org").execute();
+    public void testGet() throws Exception {
+        RestClientResponse resp = client.get(TEST_URL).execute();
         assertEquals(200, resp.getStatusLine().getStatusCode());
+        assertEquals("Method:GET", resp.getContent().trim());
     }
 
     @Test
-    public void testJSoftwareDump() throws Exception {
+    public void testGetWithParameters() throws Exception {
+        RestClientResponse resp = client.get(TEST_URL).parameter("par1", "par1 value").execute();
+        assertEquals(200, resp.getStatusLine().getStatusCode());
+        assertEquals("Method:GET\nGET par1=par1 value", resp.getContent().trim());
+    }
+
+    @Test
+    public void testPost() throws Exception {
+        RestClientResponse resp = client.post(TEST_URL).body("PostData", ContentType.DEFAULT_TEXT).execute();
+        assertEquals("Method:POST\nRawPost: PostData", resp.getContent().trim());
+    }
+
+    @Test
+    public void testPostWithParameters() throws Exception {
+        RestClientResponse resp = client.post(TEST_URL).parameter("p", "p value").execute();
+        assertEquals("Method:POST\nPOST p=p value", resp.getContent().trim());
+    }
+
+    @Test
+    public void testDeleteWithParameters() throws Exception {
+        RestClientResponse resp = client.delete(TEST_URL).parameter("p", "p value").execute();
+        assertEquals("Method:DELETE\nGET p=p value", resp.getContent().trim());
+    }
+
+    @Test
+    public void testPutWithParameters() throws Exception {
+        RestClientResponse resp = client.put(TEST_URL).execute();
+        assertEquals("Method:PUT", resp.getContent().trim());
+    }
+
+    @Test
+    public void testResponseDump() throws Exception {
         try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            RestClientResponse resp = client.get("http://jsoftware.org").execute();
-            resp.dump(true, new PrintStream(out));
-            assertTrue(out.size() > 0);
+            RestClientResponse resp = client.get(TEST_URL).execute();
+            resp.dump(false, new PrintStream(out));
+            String str = new String(out.toByteArray()).trim();
+            assertEquals("HTTP/1.1 200 OK\nMethod:GET", str);
         }
     }
 
@@ -61,10 +97,12 @@ public class ClientEndToEndTest {
 
     @Test
     public void testReadContentTwice() throws Exception {
-        RestClientResponse resp = client.get("http://jsoftware.org").execute();
+        RestClientResponse resp = client.get(TEST_URL).execute();
         BinaryContent binaryContent = resp.getBinaryContent();
         InputStream ins = binaryContent.getStream();
         IOUtils.toString(ins);
         IOUtils.closeQuietly(ins);
     }
+
+
 }
