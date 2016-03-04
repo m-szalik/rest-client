@@ -130,7 +130,7 @@ public class GetMethodCachePluginTest extends AbstractPluginTest {
             counter.incrementAndGet();
             return stdResponse(200, UUID.randomUUID().toString());
         });
-        assertEquals(0, counter.get());
+        assertEquals(2, counter.get());
     }
 }
 
