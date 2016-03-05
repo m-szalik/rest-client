@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -88,6 +89,32 @@ public class ClientEndToEndTest {
             assertTrue(str.contains("HEADER Date:"));
             assertTrue(str.endsWith("Method:GET"));
         }
+    }
+
+    @Test
+    public void testResponseDumpStdOut() throws Exception {
+        final PrintStream stdout = System.out;
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            System.setOut(new PrintStream(out));
+            RestClientResponse resp = client.get(TEST_URL).execute();
+            resp.dump(true);
+            String str = new String(out.toByteArray()).trim();
+            assertTrue(str.startsWith("HTTP/1.1 200 OK"));
+            assertTrue(str.contains("HEADER Date:"));
+            assertTrue(str.endsWith("Method:GET"));
+        } finally {
+            System.setOut(stdout);
+        }
+    }
+
+    @Test
+    public void testFindHeader() throws Exception {
+        RestClientResponse resp = client.get(TEST_URL).execute();
+        Optional<String> header;
+        header = resp.getHeader("Date");
+        Assert.assertTrue(header.get().length() > 0);
+        header = resp.getHeader("WhateverNotExisting");
+        Assert.assertFalse(header.isPresent());
     }
 
     @Test(expected = UnknownHostException.class)
