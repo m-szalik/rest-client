@@ -176,4 +176,14 @@ public class ClientEndToEndTest {
         assertEquals("Method:POST\nRawPost: p=A%BC%EBZ", resp.getContent().trim()); // ISO-8859-2
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testBodyNullValue() throws Exception {
+        client.post(TEST_URL).body((byte[]) null, ContentType.APPLICATION_OCTET_STREAM).execute();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBodyNullContentType() throws Exception {
+        client.post(TEST_URL).body("body", null).execute();
+    }
+
 }

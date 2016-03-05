@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 class InvocationChain implements RestClientPlugin.PluginChain {
     final Callable operation;
 
-    InvocationChain(Callable operation) {
+    private InvocationChain(Callable operation) {
         this.operation = operation;
     }
 
