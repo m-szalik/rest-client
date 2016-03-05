@@ -83,14 +83,8 @@ public class VerbosePlugin implements RestClientPlugin {
                 }
             }
         },
-        RESPONSE_TIME {
-            @Override
-            void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException {
-                buff.append("* Time: ").append(arg).append(" ms.\n");
-            }
-        },
-
         ;
+
         abstract void output(StringBuilder buff, PluginContext ctx, Object arg) throws IOException;
 
         private static void appendBody(StringBuilder buff, String prefix, String content) {
@@ -137,13 +131,11 @@ public class VerbosePlugin implements RestClientPlugin {
             this.options.add(oo);
         }
         logger.debug("Creating {} with logsOutput={} and {}", getClass(), logsOutput, StringUtils.join(this.output, ','));
-
     }
 
     @Override
     public void plugin(PluginContext context, PluginChain chain) throws Exception {
         StringBuilder buff = new StringBuilder();
-        long startTs = System.currentTimeMillis();
         boolean error = true;
         try {
             append(buff, context, RenderingOption.REQUEST_URL, null);
@@ -157,11 +149,9 @@ public class VerbosePlugin implements RestClientPlugin {
             buff.append("* ").append(ex);
             throw ex;
         } finally {
-            long time = System.currentTimeMillis() - startTs;
             append(buff, context, RenderingOption.RESPONSE_STATUS, null);
             append(buff, context, RenderingOption.RESPONSE_HEADERS, null);
             append(buff, context, RenderingOption.RESPONSE_BODY, null);
-            append(buff, context, RenderingOption.RESPONSE_TIME, time);
             print(buff, error);
         }
     }

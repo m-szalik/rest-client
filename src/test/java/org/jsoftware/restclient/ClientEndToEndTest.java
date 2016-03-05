@@ -2,14 +2,13 @@ package org.jsoftware.restclient;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.entity.ContentType;
 import org.jsoftware.restclient.impl.ApacheHttpClientImplRestClient;
-import org.jsoftware.restclient.plugins.VerbosePlugin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -27,8 +26,7 @@ public class ClientEndToEndTest {
 
     @Before
     public void setUp() throws Exception {
-        PrintStream out = new PrintStream(new NullOutputStream());
-        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {new VerbosePlugin(true, new PrintStream[]{out}) });
+        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {});
     }
 
     @Test
@@ -39,16 +37,36 @@ public class ClientEndToEndTest {
     }
 
     @Test
-    public void testGetWithParameters() throws Exception {
+    public void testGetWithSingleParameter() throws Exception {
         RestClientResponse resp = client.get(TEST_URL).parameter("par1", "par1 value").execute();
         assertEquals(200, resp.getStatusLine().getStatusCode());
         assertEquals("Method:GET\nGET par1=par1 value", resp.getContent().trim());
     }
 
     @Test
-    public void testPost() throws Exception {
+    public void testGetWithMultipleParameters() throws Exception {
+        RestClientResponse resp = client.get(TEST_URL).parameter("par1", "par1 value").parameter("par", "a").parameter("par", "b").execute();
+        assertEquals(200, resp.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void testPostBodyText() throws Exception {
         RestClientResponse resp = client.post(TEST_URL).body("PostData", ContentType.DEFAULT_TEXT).execute();
         assertEquals("Method:POST\nRawPost: PostData", resp.getContent().trim());
+    }
+
+    @Test
+    public void testPostBodyBytes() throws Exception {
+        byte[] body = new byte[] { 70, 74, 78, 82 };
+        RestClientResponse resp = client.post(TEST_URL).body(body, ContentType.APPLICATION_OCTET_STREAM).execute();
+        assertEquals("Method:POST\nRawPost: FJNR", resp.getContent().trim());
+    }
+
+    @Test
+    public void testPostBodyInputStream() throws Exception {
+        byte[] body = new byte[] { 70, 74, 78, 82 };
+        RestClientResponse resp = client.post(TEST_URL).body(new ByteArrayInputStream(body), ContentType.APPLICATION_OCTET_STREAM).execute();
+        //assertEquals("Method:POST\nRawPost: FJNR", resp.getContent().trim()); fixme
     }
 
     @Test
@@ -144,5 +162,18 @@ public class ClientEndToEndTest {
         IOUtils.closeQuietly(ins);
     }
 
+    @Test(expected = java.net.MalformedURLException.class)
+    public void testInvalidURL() throws Exception {
+        client.get("xyz9").execute();
+    }
+
+    @Test
+    public void testParametersEncoding() throws Exception {
+        RestClientResponse resp;
+        resp = client.post(TEST_URL).header("Content-Type", "text/html; charset=ISO-8859-2").parameter("p", "A\u017a\u00ebZ").execute();
+        assertEquals("Method:POST\nRawPost: p=A%C5%BA%C3%ABZ", resp.getContent().trim()); // UTF-8
+        resp = client.post(TEST_URL).header("Content-Type", "text/html; charset=ISO-8859-2").parametersEncoding("ISO-8859-2").parameter("p", "A\u017a\u00ebZ").execute();
+        assertEquals("Method:POST\nRawPost: p=A%BC%EBZ", resp.getContent().trim()); // ISO-8859-2
+    }
 
 }
