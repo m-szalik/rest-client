@@ -3,6 +3,7 @@
 [![Join the chat at https://gitter.im/m-szalik/rest-client](https://badges.gitter.im/m-szalik/rest-client.svg)](https://gitter.im/m-szalik/rest-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/m-szalik/rest-client.svg?branch=master)](https://travis-ci.org/m-szalik/rest-client)
 [![codecov.io](https://codecov.io/github/m-szalik/rest-client/coverage.svg?branch=master)](https://codecov.io/github/m-szalik/rest-client?branch=master)
+[![Dependency Status](https://www.versioneye.com/user/projects/56e2b1f3df573d00495abb62/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56e2b1f3df573d00495abb62)
 
 RestClient that parses:
  * **json** by [JsonPath](https://github.com/jayway/JsonPath)
