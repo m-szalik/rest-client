@@ -72,3 +72,6 @@ RestClient restClient = new DefaultRestClient();
                                     .header("headerName", "headerValue")    // add http header
                                     .execute();                             // execute http call
 ```
+
+### License
+Apache License 2.0
