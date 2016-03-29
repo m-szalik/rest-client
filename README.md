@@ -14,6 +14,9 @@ RestClient that parses:
  * Support for cookies
  * Flexibility provided by plugins
 
+## Requirements
+ * Java 8 or newer
+
 ## Maven artifact
 ```xml
 <dependency>
