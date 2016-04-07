@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
  * @author szalik
  */
 class InvocationChain implements RestClientPlugin.PluginChain {
-    final Callable operation;
+    final Callable operation; // package access level because of tests
 
     private InvocationChain(Callable operation) {
         this.operation = operation;

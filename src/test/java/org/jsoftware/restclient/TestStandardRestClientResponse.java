@@ -87,6 +87,7 @@ class TestStandardRestClientResponseBinaryContent implements BinaryContent {
 
     @Override
     public void close() {
+        // nothing to do here
     }
 
 }

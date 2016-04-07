@@ -112,7 +112,7 @@ public class ApacheHttpClientImplRestClient implements RestClient {
         try {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 

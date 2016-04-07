@@ -32,8 +32,13 @@ public class RequestTimePluginTest extends AbstractPluginTest {
 
     @Test
     public void testDefaultConstructor() throws Exception {
-        RequestTimePlugin plugin = new RequestTimePlugin();
-        call(plugin, get("http://nowhere.com"), (r) -> stdResponse(200, "OK"));
-        // if no exception throw we are fine.
+        try {
+            RequestTimePlugin plugin = new RequestTimePlugin();
+            call(plugin, get("http://nowhere.com"), (r) -> stdResponse(200, "OK"));
+            // if no exception throw we are fine.
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail("An exception was thrown " + ex);
+        }
     }
 }

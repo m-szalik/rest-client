@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.jsoftware.restclient.impl.ApacheHttpClientImplRestClient;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +15,8 @@ import java.net.UnknownHostException;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -66,7 +67,7 @@ public class ClientEndToEndTest {
     public void testPostBodyInputStream() throws Exception {
         byte[] body = new byte[] { 70, 74, 78, 82 };
         RestClientResponse resp = client.post(TEST_URL).body(new ByteArrayInputStream(body), ContentType.APPLICATION_OCTET_STREAM).execute();
-        //assertEquals("Method:POST\nRawPost: FJNR", resp.getContent().trim()); fixme
+        assertEquals("Method:POST\nRawPost: FJNR", resp.getContent().trim());
     }
 
     @Test
@@ -98,7 +99,7 @@ public class ClientEndToEndTest {
     }
 
     @Test
-    public void testResponseDumpWithHeadres() throws Exception {
+    public void testResponseDumpWithHeaders() throws Exception {
         try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             RestClientResponse resp = client.get(TEST_URL).execute();
             resp.dump(true, new PrintStream(out));
@@ -130,9 +131,9 @@ public class ClientEndToEndTest {
         RestClientResponse resp = client.get(TEST_URL).execute();
         Optional<String> header;
         header = resp.getHeader("Date");
-        Assert.assertTrue(header.get().length() > 0);
+        assertTrue(header.get().length() > 0);
         header = resp.getHeader("WhateverNotExisting");
-        Assert.assertFalse(header.isPresent());
+        assertFalse(header.isPresent());
     }
 
     @Test(expected = UnknownHostException.class)
@@ -147,7 +148,7 @@ public class ClientEndToEndTest {
         try {
             byte[] buff = IOUtils.toByteArray(in);
             String md5Hex = DigestUtils.md5Hex(buff);
-            Assert.assertEquals("020d2468a38f4691892e2c8b396d9077", md5Hex);
+            assertEquals("020d2468a38f4691892e2c8b396d9077", md5Hex);
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -158,6 +159,7 @@ public class ClientEndToEndTest {
         RestClientResponse resp = client.get(TEST_URL).execute();
         BinaryContent binaryContent = resp.getBinaryContent();
         InputStream ins = binaryContent.getStream();
+        assertNotNull(ins);
         IOUtils.toString(ins);
         IOUtils.closeQuietly(ins);
     }
