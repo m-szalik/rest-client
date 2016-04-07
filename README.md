@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/m-szalik/rest-client.svg?branch=master)](https://travis-ci.org/m-szalik/rest-client)
 [![codecov.io](https://codecov.io/github/m-szalik/rest-client/coverage.svg?branch=master)](https://codecov.io/github/m-szalik/rest-client?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/56e2b1f3df573d00495abb62/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56e2b1f3df573d00495abb62)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/06e00f565db44179aee9cf5162f37836)](https://www.codacy.com/app/szalik/rest-client)
 
 RestClient that parses:
  * **json** by [JsonPath](https://github.com/jayway/JsonPath)
@@ -13,6 +14,9 @@ RestClient that parses:
 ## Features
  * Support for cookies
  * Flexibility provided by plugins
+
+## Requirements
+ * Java 8 or newer
 
 ## Maven artifact
 ```xml
@@ -68,7 +72,7 @@ RestClientResponse response = restClient.post("https://somewhere.com")       // 
 ### Add custom header
 ```java
 RestClient restClient = new DefaultRestClient();
-    RestClientResponse response = restClient.get("https://somewhere.com")
+RestClientResponse response = restClient.get("https://somewhere.com")
                                     .header("headerName", "headerValue")    // add http header
                                     .execute();                             // execute http call
 ```
