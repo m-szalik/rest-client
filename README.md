@@ -71,7 +71,7 @@ RestClientResponse response = restClient.post("https://somewhere.com")       // 
 ### Add custom header
 ```java
 RestClient restClient = new DefaultRestClient();
-    RestClientResponse response = restClient.get("https://somewhere.com")
+RestClientResponse response = restClient.get("https://somewhere.com")
                                     .header("headerName", "headerValue")    // add http header
                                     .execute();                             // execute http call
 ```
