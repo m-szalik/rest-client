@@ -1,5 +1,7 @@
 package org.jsoftware.restclient;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -14,7 +16,7 @@ public interface BinaryContent extends AutoCloseable {
      * @throws IOException io error occurred
      * @return binary data stream
      */
-    InputStream getStream() throws IOException;
+    @NotNull InputStream getStream() throws IOException;
 
     /**
      * @return true if stream can be opened more then one time.
@@ -24,12 +26,12 @@ public interface BinaryContent extends AutoCloseable {
     /**
      * @return content length
      */
-    Optional<Long> getLength();
+    @NotNull Optional<Long> getLength();
 
     /**
      * @return content type;
      */
-    Optional<String> getContentType();
+    @NotNull Optional<String> getContentType();
 
     @Override
     void close(); // override - no exceptions

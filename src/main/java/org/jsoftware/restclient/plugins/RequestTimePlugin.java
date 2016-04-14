@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.http.client.methods.HttpRequestBase;
+import org.jetbrains.annotations.TestOnly;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class RequestTimePlugin implements RestClientPlugin {
         this(Clock.systemDefaultZone());
     }
 
+    @TestOnly
     protected RequestTimePlugin(Clock clock) {
         this.clock = clock;
     }

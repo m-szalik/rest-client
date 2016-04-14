@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.jsoftware.restclient.RestClientPlugin;
 
 /**
@@ -14,11 +15,11 @@ public class AuthBearerPlugin implements RestClientPlugin {
         this(null);
     }
 
-    public AuthBearerPlugin(String token) {
+    public AuthBearerPlugin(@Nullable String token) {
         this.token = token;
     }
 
-    public void setToken(String token) {
+    public void setToken(@Nullable String token) {
         this.token = token;
     }
 

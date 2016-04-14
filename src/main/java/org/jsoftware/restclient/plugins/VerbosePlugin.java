@@ -6,6 +6,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.jetbrains.annotations.Nullable;
 import org.jsoftware.restclient.BinaryContent;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
@@ -124,7 +125,7 @@ public class VerbosePlugin implements RestClientPlugin {
      * @param outputs array of PrintStreams to send output there
      * @param options rendering options
      */
-    public VerbosePlugin(boolean logsOutput, PrintStream[] outputs, RenderingOption... options) {
+    public VerbosePlugin(boolean logsOutput, @Nullable PrintStream[] outputs, RenderingOption... options) {
         this.output = outputs == null ? new PrintStream[0] : outputs;
         this.logsOutput = logsOutput;
         for(RenderingOption oo : options == null ? RenderingOption.values() : options) {

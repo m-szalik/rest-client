@@ -1,7 +1,7 @@
 package org.jsoftware.restclient.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.jsoftware.restclient.InvalidContentException;
+import org.jsoftware.restclient.InvalidTypeOfContentException;
 import org.jsoftware.restclient.PathNotFoundException;
 import org.jsoftware.restclient.TestStandardRestClientResponse;
 import org.jsoup.nodes.Element;
@@ -28,7 +28,7 @@ public class StandardRestClientResponseTest {
         }
     }
 
-    @Test(expected = InvalidContentException.class)
+    @Test(expected = InvalidTypeOfContentException.class)
     public void testJsonInvalidContent() throws Exception {
         new TestStandardRestClientResponse("trash").json("$.num");
     }
@@ -39,12 +39,12 @@ public class StandardRestClientResponseTest {
         try {
             new TestStandardRestClientResponse(content).xPath("/");
             Assert.fail("Exception expected");
-        } catch (InvalidContentException e) {
+        } catch (InvalidTypeOfContentException e) {
             Assert.assertEquals(content, e.getContent());
         }
     }
 
-    @Test(expected = InvalidContentException.class)
+    @Test(expected = InvalidTypeOfContentException.class)
     public void testHTMLInvalidContent() throws Exception {
         new TestStandardRestClientResponse("trash").html("div");
     }

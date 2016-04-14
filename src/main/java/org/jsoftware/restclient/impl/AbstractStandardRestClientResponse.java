@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.jsoftware.restclient.BinaryContent;
 import org.jsoftware.restclient.InvalidContentException;
+import org.jsoftware.restclient.InvalidTypeOfContentException;
 import org.jsoftware.restclient.PathNotFoundException;
 import org.jsoftware.restclient.RestClientResponse;
 import org.jsoup.Jsoup;
@@ -55,13 +56,16 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
 
     @Override
     public synchronized Object json(String path) throws IOException, PathNotFoundException {
+        if (path == null) {
+            throw new IllegalArgumentException("Parameter path cannot be nul");
+        }
         if (json == null) {
             String content = getContent();
             if (! StringUtils.isBlank(content)) {
                 json = JsonPath.parse(content);
             }
             if (json == null || json.json() instanceof CharSequence) {
-                throw new InvalidContentException("Content is not valid JSON document.", getContent(), StringUtils.isBlank(content) ? new BlankContentException() : null);
+                throw new InvalidTypeOfContentException("Content is not valid JSON document.", getContent(), StringUtils.isBlank(content) ? new BlankContentException() : null);
             }
         }
         try {
@@ -73,6 +77,9 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
 
 
     private synchronized XPathExpression xPathInternal(String xPath) throws ParserConfigurationException, IOException, XPathExpressionException, PathNotFoundException {
+        if (xPath == null) {
+            throw new IllegalArgumentException("Parameter path cannot be nul");
+        }
         if (xmlDocument == null) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -81,7 +88,7 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
                 checkNotBlank(content);
                 xmlDocument = builder.parse(new InputSource(new StringReader(content)));
             } catch (SAXException|BlankContentException e) {
-                throw new InvalidContentException("Content is not valid XML document.", getContent(), e);
+                throw new InvalidTypeOfContentException("Content is not valid XML document.", getContent(), e);
             }
         }
         XPathFactory xPathfactory = XPathFactory.newInstance();
@@ -120,10 +127,13 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
 
     @Override
     public synchronized Elements html(String jQueryExpression) throws IOException {
+        if (jQueryExpression == null) {
+            throw new IllegalArgumentException("Parameter jQueryExpression cannot be nul");
+        }
         if (htmlDocument == null) {
             String content = getContent();
             if (StringUtils.isBlank(content) || ! StringUtils.containsIgnoreCase(content, "<html")) {
-                throw new InvalidContentException("Content is not valid HTML document.", content, StringUtils.isBlank(content) ? new BlankContentException() : null);
+                throw new InvalidTypeOfContentException("Content is not valid HTML document.", content, StringUtils.isBlank(content) ? new BlankContentException() : null);
             }
             htmlDocument = Jsoup.parse(content);
         }
@@ -140,7 +150,9 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
             }
         }
         s.append(getContent());
-        to.append(s).flush();
+        if (to != null) {
+            to.append(s).flush();
+        }
     }
 
     private static void checkNotBlank(String content) throws BlankContentException {
@@ -150,6 +162,9 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
     }
 
 
-    private static class BlankContentException extends Exception {
+    private static class BlankContentException extends InvalidContentException {
+        private BlankContentException() {
+            super("Content is blank.", null);
+        }
     }
 }

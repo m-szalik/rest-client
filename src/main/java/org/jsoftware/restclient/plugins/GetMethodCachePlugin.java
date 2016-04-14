@@ -2,6 +2,8 @@ package org.jsoftware.restclient.plugins;
 
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.jsoftware.restclient.RestClientResponse;
 import org.jsoftware.utils.SimpleCache;
@@ -27,7 +29,8 @@ public class GetMethodCachePlugin implements RestClientPlugin {
      * @param size cache size
      * @param clock to get <code>now</code>
      */
-    protected GetMethodCachePlugin(long timeoutMillis, int size, Clock clock) {
+    @TestOnly
+    protected GetMethodCachePlugin(long timeoutMillis, int size, @NotNull Clock clock) {
         this.cache = new SimpleCache<String, RestClientResponse>(timeoutMillis, size) {
             @Override
             protected Instant now() {

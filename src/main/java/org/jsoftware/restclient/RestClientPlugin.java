@@ -1,6 +1,7 @@
 package org.jsoftware.restclient;
 
 import org.apache.http.client.methods.HttpRequestBase;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * RestClientPlugin allows modification of http requests and responses
@@ -71,5 +72,5 @@ public interface RestClientPlugin {
      * @param chain chain of plugins
      * @throws Exception if any error in chain occurred
      */
-    void plugin(PluginContext context, PluginChain chain) throws Exception;
+    void plugin(@NotNull PluginContext context, @NotNull PluginChain chain) throws Exception;
 }

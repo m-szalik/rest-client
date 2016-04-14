@@ -1,5 +1,7 @@
 package org.jsoftware.restclient;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.xml.namespace.QName;
 import java.io.IOException;
 
@@ -15,11 +17,12 @@ public class PathNotFoundException extends IOException {
 
     public PathNotFoundException(String path, Throwable init) {
         this.path = path;
-        if (init !=null) {
+        if (init != null) {
             this.initCause(init);
         }
     }
 
+    @NotNull
     public String getPath() {
         return path;
     }

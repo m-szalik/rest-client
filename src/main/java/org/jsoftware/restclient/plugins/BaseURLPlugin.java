@@ -1,5 +1,6 @@
 package org.jsoftware.restclient.plugins;
 
+import org.jetbrains.annotations.NotNull;
 import org.jsoftware.restclient.RestClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class BaseURLPlugin implements RestClientPlugin {
      * @param baseURL BaseURL
      * @throws IllegalArgumentException if baseURL is not valid URL
      */
-    public BaseURLPlugin(String baseURL) throws IllegalArgumentException {
+    public BaseURLPlugin(@NotNull String baseURL) throws IllegalArgumentException {
         try {
             new URL(baseURL);
         } catch (MalformedURLException e) {

@@ -1,5 +1,8 @@
 package org.jsoftware.restclient;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 
 /**
@@ -13,7 +16,7 @@ public interface BaseRestClientCall<C extends BaseRestClientCall> {
      * @throws IOException if http request failed
      * @return http response
      */
-    RestClientResponse execute() throws IOException;
+    @NotNull RestClientResponse execute() throws IOException;
 
     /**
      * Add request parameter
@@ -21,7 +24,7 @@ public interface BaseRestClientCall<C extends BaseRestClientCall> {
      * @param value parameter value
      * @return self
      */
-    C parameter(String name, Object value);
+    @NotNull C parameter(@NotNull String name, @Nullable Object value);
 
     /**
      * Set http header
@@ -29,6 +32,6 @@ public interface BaseRestClientCall<C extends BaseRestClientCall> {
      * @param value header value
      * @return self
      */
-    C header(String name, String value);
+    @NotNull C header(@NotNull String name, @Nullable String value);
 
 }

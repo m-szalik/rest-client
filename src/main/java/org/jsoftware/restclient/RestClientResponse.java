@@ -2,6 +2,8 @@ package org.jsoftware.restclient;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.select.Elements;
 
 import javax.xml.namespace.QName;
@@ -20,35 +22,36 @@ public interface RestClientResponse extends Serializable {
     /**
      * @return http status line
      */
-    StatusLine getStatusLine();
+    @NotNull StatusLine getStatusLine();
 
     /**
      * @return response http headers
      */
-    Header[] getAllHeaders();
+    @NotNull Header[] getAllHeaders();
 
     /**
      * @return http response body as binary stream
      * @throws IOException when content is not available
      */
-    BinaryContent getBinaryContent() throws IOException;
+    @NotNull BinaryContent getBinaryContent() throws IOException;
 
     /**
      * @throws IOException if http response cannot be read or if content was already used by #getInputStream
      * @return response body as String
      */
-    String getContent() throws IOException;
+    @NotNull String getContent() throws IOException;
 
     /**
      * Parse response body as json
      * @param path json path
      * @return String, Number, List...
      * @throws IOException if response cannot be read, is not valid json
-     * @throws InvalidContentException if content is not valid JSON document
+     * @throws InvalidTypeOfContentException if content is not valid JSON document
      * @throws PathNotFoundException if requested path cannot be found
+     * @throws IllegalArgumentException if path is null
      * @see <a href="https://github.com/jayway/JsonPath">Jayway</a>
      */
-    Object json(String path) throws IOException, PathNotFoundException, InvalidContentException;
+    @Nullable Object json(@NotNull String path) throws IOException, PathNotFoundException, InvalidTypeOfContentException;
 
     /**
      * Parse response body as xml
@@ -57,12 +60,12 @@ public interface RestClientResponse extends Serializable {
      * @param type requested xPath type
      * @return requested value
      * @throws IOException if response cannot be read
-     * @throws InvalidContentException if content is not valid XML document
+     * @throws InvalidTypeOfContentException if content is not valid XML document
      * @throws XPathExpressionException if argument <code>xPath</code> is not valid xPath definition
      * @throws PathNotFoundException if requested path cannot be found
      *
      */
-    Object xPath(String xPath, QName type) throws IOException, XPathExpressionException, PathNotFoundException, InvalidContentException;
+    @NotNull Object xPath(@NotNull String xPath, @NotNull QName type) throws IOException, XPathExpressionException, PathNotFoundException, InvalidTypeOfContentException;
 
     /**
      * Parse response body as xml
@@ -70,12 +73,21 @@ public interface RestClientResponse extends Serializable {
      * @return requested value
      * @throws IOException if response cannot be read or is not valid XML
      * @throws XPathExpressionException if argument <code>xPath</code> is not valid xPath definition
-     * @throws InvalidContentException if content is not valid XML document
+     * @throws InvalidTypeOfContentException if content is not valid XML document
+     * @throws IllegalArgumentException if xPath is null
      * @throws PathNotFoundException if requested path cannot be found
      */
-    String xPath(String xPath) throws IOException, XPathExpressionException, PathNotFoundException, InvalidContentException;
+    @NotNull String xPath(@NotNull String xPath) throws IOException, XPathExpressionException, PathNotFoundException, InvalidTypeOfContentException;
 
-    Elements html(String jQueryExpression) throws IOException;
+    /**
+     *
+     * @param jQueryExpression an expression (jQuery style)
+     * @return Elements for that jQueryExpression
+     * @throws IOException error during content reading
+     * @throws IllegalArgumentException if jQueryExpression is null
+     * @see org.jsoup.Jsoup
+     */
+    @NotNull Elements html(@NotNull String jQueryExpression) throws IOException;
 
 
     /**
@@ -84,7 +96,7 @@ public interface RestClientResponse extends Serializable {
      * @param to output stream
      * @throws IOException if response cannot be read
      */
-    void dump(boolean withHeaders, PrintStream to) throws IOException;
+    void dump(boolean withHeaders, @Nullable PrintStream to) throws IOException;
 
     /**
      * Dump response to stdout

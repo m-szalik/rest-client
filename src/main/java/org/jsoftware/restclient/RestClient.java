@@ -1,5 +1,7 @@
 package org.jsoftware.restclient;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.MalformedURLException;
 
 /**
@@ -13,7 +15,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientCall get(String url) throws MalformedURLException;
+    @NotNull RestClientCall get(@NotNull String url) throws MalformedURLException;
 
 
     /**
@@ -22,7 +24,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientCall head(String url) throws MalformedURLException;
+    @NotNull RestClientCall head(@NotNull String url) throws MalformedURLException;
 
 
     /**
@@ -31,7 +33,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientCall options(String url) throws MalformedURLException;
+    @NotNull RestClientCall options(@NotNull String url) throws MalformedURLException;
 
 
     /**
@@ -40,7 +42,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientCall delete(String url) throws MalformedURLException;
+    @NotNull RestClientCall delete(@NotNull String url) throws MalformedURLException;
 
 
     /**
@@ -49,7 +51,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientDataCall post(String url) throws MalformedURLException;
+    @NotNull RestClientDataCall post(@NotNull String url) throws MalformedURLException;
 
 
     /**
@@ -58,7 +60,7 @@ public interface RestClient extends AutoCloseable {
      * @return request builder
      * @throws MalformedURLException if <code>url</code> is not well formatted.
      */
-    RestClientDataCall put(String url) throws MalformedURLException;
+    @NotNull RestClientDataCall put(@NotNull String url) throws MalformedURLException;
 
 
 }

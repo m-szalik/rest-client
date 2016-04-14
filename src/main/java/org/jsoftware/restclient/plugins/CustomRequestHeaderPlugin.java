@@ -1,6 +1,7 @@
 package org.jsoftware.restclient.plugins;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jsoftware.restclient.RestClientPlugin;
 
 /**
@@ -17,7 +18,7 @@ public class CustomRequestHeaderPlugin implements RestClientPlugin {
      * @param headerName header name
      * @param headerValue initial value of header field
      */
-    public CustomRequestHeaderPlugin(String headerName, String headerValue) {
+    public CustomRequestHeaderPlugin(@NotNull String headerName, @NotNull String headerValue) {
         this.headerName = headerName;
         if (StringUtils.isBlank(headerName)) {
             throw new IllegalArgumentException("Parameter 'headerName' cannot be blank");
@@ -37,7 +38,7 @@ public class CustomRequestHeaderPlugin implements RestClientPlugin {
      * Update header value
      * @param headerValue new value of the header
      */
-    public void setHeaderValue(String headerValue) {
+    public void setHeaderValue(@NotNull String headerValue) {
         if (StringUtils.isBlank(headerValue)) {
             throw new IllegalArgumentException("Parameter 'headerValue' cannot be blank." +
                     " If you want to disable this header invoke disable() method.");

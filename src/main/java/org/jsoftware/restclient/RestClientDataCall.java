@@ -1,6 +1,7 @@
 package org.jsoftware.restclient;
 
 import org.apache.http.entity.ContentType;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 
@@ -16,7 +17,7 @@ public interface RestClientDataCall extends BaseRestClientCall<RestClientDataCal
      * @return self
      * @see BaseRestClientCall#parameter(String, Object)
      */
-    RestClientDataCall parametersEncoding(String charset);
+    @NotNull RestClientDataCall parametersEncoding(@NotNull String charset);
 
     /**
      * Set request body
@@ -24,7 +25,7 @@ public interface RestClientDataCall extends BaseRestClientCall<RestClientDataCal
      * @param contentType body content-type
      * @return self
      */
-    RestClientDataCall body(InputStream inputStream, ContentType contentType);
+    @NotNull RestClientDataCall body(@NotNull InputStream inputStream, @NotNull ContentType contentType);
 
     /**
      * Set request body
@@ -32,7 +33,7 @@ public interface RestClientDataCall extends BaseRestClientCall<RestClientDataCal
      * @param contentType body content-type
      * @return self
      */
-    RestClientDataCall body(byte[] data, ContentType contentType);
+    @NotNull RestClientDataCall body(@NotNull byte[] data, @NotNull ContentType contentType);
 
     /**
      * Set request body
@@ -40,6 +41,6 @@ public interface RestClientDataCall extends BaseRestClientCall<RestClientDataCal
      * @param contentType body content-type
      * @return self
      */
-    RestClientDataCall body(String data, ContentType contentType);
+    @NotNull RestClientDataCall body(@NotNull String data, @NotNull ContentType contentType);
 
 }
