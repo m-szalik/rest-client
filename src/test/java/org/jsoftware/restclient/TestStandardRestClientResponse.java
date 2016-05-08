@@ -1,14 +1,16 @@
 package org.jsoftware.restclient;
 
-import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicStatusLine;
 import org.jsoftware.restclient.impl.AbstractStandardRestClientResponse;
+import org.jsoftware.restclient.impl.ResponseStatusImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Optional;
  */
 public class TestStandardRestClientResponse extends AbstractStandardRestClientResponse {
     private final StatusLine statusLine;
-    private final Header[] headers;
+    private final HttpHeader[] headers;
     private final TestStandardRestClientResponseBinaryContent binaryContent;
 
 
@@ -24,24 +26,24 @@ public class TestStandardRestClientResponse extends AbstractStandardRestClientRe
         this(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "Code " + 200), content);
     }
 
-    public TestStandardRestClientResponse(StatusLine statusLine, byte[] content, boolean contentRepeatable, Header... headers) {
+    public TestStandardRestClientResponse(StatusLine statusLine, byte[] content, boolean contentRepeatable, HttpHeader... headers) {
         this.statusLine = statusLine;
-        this.headers = headers == null ? new Header[]{} : headers;
+        this.headers = headers == null ? new HttpHeader[]{} : headers;
         this.binaryContent = new TestStandardRestClientResponseBinaryContent(content, contentRepeatable);
     }
 
-    public TestStandardRestClientResponse(BasicStatusLine statusLine, String content, Header... headers) {
+    public TestStandardRestClientResponse(BasicStatusLine statusLine, String content, HttpHeader... headers) {
         this(statusLine, content.getBytes(), true, headers);
     }
 
     @Override
-    public StatusLine getStatusLine() {
-        return statusLine;
+    public ResponseStatus getStatusLine() {
+        return new ResponseStatusImpl(statusLine.getStatusCode(), statusLine.getReasonPhrase());
     }
 
     @Override
-    public Header[] getAllHeaders() {
-        return headers;
+    public Collection<HttpHeader> getAllHeaders() {
+        return Arrays.asList(headers);
     }
 
     @Override
@@ -89,5 +91,5 @@ class TestStandardRestClientResponseBinaryContent implements BinaryContent {
     public void close() {
         // nothing to do here
     }
-
 }
+

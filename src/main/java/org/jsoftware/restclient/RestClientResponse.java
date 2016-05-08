@@ -1,7 +1,5 @@
 package org.jsoftware.restclient;
 
-import org.apache.http.Header;
-import org.apache.http.StatusLine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.select.Elements;
@@ -11,6 +9,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -19,15 +18,19 @@ import java.util.Optional;
  */
 public interface RestClientResponse extends Serializable {
 
+    interface ResponseStatus {
+        int getStatusCode();
+        String getReasonPhrase();
+    }
     /**
      * @return http status line
      */
-    @NotNull StatusLine getStatusLine();
+    @NotNull ResponseStatus getStatusLine();
 
     /**
      * @return response http headers
      */
-    @NotNull Header[] getAllHeaders();
+    @NotNull Collection<HttpHeader> getAllHeaders();
 
     /**
      * @return http response body as binary stream
@@ -112,9 +115,9 @@ public interface RestClientResponse extends Serializable {
      * @return response header value
      */
     default Optional<String> getHeader(String headerName) {
-        Header[] headers = getAllHeaders();
+        Collection<HttpHeader> headers = getAllHeaders();
         if (headers != null) {
-            for(Header h:headers) {
+            for(HttpHeader h : headers) {
                 if (headerName.equalsIgnoreCase(h.getName())) {
                     return Optional.of(h.getValue());
                 }

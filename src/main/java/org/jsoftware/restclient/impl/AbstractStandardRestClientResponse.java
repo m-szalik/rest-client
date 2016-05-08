@@ -4,8 +4,8 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.jsoftware.restclient.BinaryContent;
+import org.jsoftware.restclient.HttpHeader;
 import org.jsoftware.restclient.InvalidContentException;
 import org.jsoftware.restclient.InvalidTypeOfContentException;
 import org.jsoftware.restclient.PathNotFoundException;
@@ -145,7 +145,7 @@ public abstract class AbstractStandardRestClientResponse implements RestClientRe
         StringBuilder s = new StringBuilder();
         s.append(getStatusLine()).append('\n');
         if (withHeaders) {
-            for(Header h : getAllHeaders()) {
+            for(HttpHeader h : getAllHeaders()) {
                 s.append("HEADER ").append(h.getName()).append(":").append(h.getValue()).append('\n');
             }
         }

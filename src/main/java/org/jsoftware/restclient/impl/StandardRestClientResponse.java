@@ -5,13 +5,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 import org.jsoftware.restclient.BinaryContent;
+import org.jsoftware.restclient.HttpHeader;
+import org.jsoftware.restclient.RestClientResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -26,8 +29,17 @@ class StandardRestClientResponse extends AbstractStandardRestClientResponse {
     }
 
     @Override
-    public Header[] getAllHeaders() {
-        return httpResponse.getAllHeaders();
+    public Collection<HttpHeader> getAllHeaders() {
+        LinkedList<HttpHeader> headers = new LinkedList<>();
+        for(Header h : httpResponse.getAllHeaders()) {
+            int size = h.getElements().length;
+            String[] values = new String[size];
+            for(int i=0;i<size;i++) {
+                values[i] = h.getElements()[i].getValue();
+            }
+            headers.add(new ResponseHeaderImpl(h.getName(), values));
+        }
+        return headers;
     }
 
 
@@ -45,8 +57,8 @@ class StandardRestClientResponse extends AbstractStandardRestClientResponse {
 
 
     @Override
-    public StatusLine getStatusLine() {
-        return httpResponse.getStatusLine();
+    public RestClientResponse.ResponseStatus getStatusLine() {
+        return new ResponseStatusImpl(httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
     }
 
 }
@@ -118,3 +130,4 @@ class StandardRestClientResponseBinaryContent implements BinaryContent {
         }
     }
 }
+

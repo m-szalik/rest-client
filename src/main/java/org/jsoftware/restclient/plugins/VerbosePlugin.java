@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,9 +97,9 @@ public class VerbosePlugin implements RestClientPlugin {
             }
         }
 
-        private static void appendHeaders(StringBuilder buff, String prefix, Header[] headers) {
-            if (headers != null && headers.length > 0) {
-                for(Header header : headers) {
+        private static void appendHeaders(StringBuilder buff, String prefix, Collection<RestClientResponse.ResponseHeader> headers) {
+            if (headers != null && headers.size() > 0) {
+                for(RestClientResponse.ResponseHeader header : headers) {
                     buff.append(prefix).append(header.getName()).append(": ").append(header.getValue()).append('\n');
                 }
             }
