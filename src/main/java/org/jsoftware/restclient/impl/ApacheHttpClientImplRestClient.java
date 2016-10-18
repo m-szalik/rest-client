@@ -66,7 +66,7 @@ public class ApacheHttpClientImplRestClient implements RestClient {
         if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
-        if (f.contains(RestClientFeature.IGNORE_REDIRECTS)) {
+        if (! f.contains(RestClientFeature.AUTOMATIC_REDIRECTS)) {
             builder = builder.disableAutomaticRetries();
         }
         if (plugins != null) {

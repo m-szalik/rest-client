@@ -8,5 +8,5 @@ public enum RestClientFeature {
      * Enable cookies support
      */
     ENABLE_COOKIES,
-    IGNORE_REDIRECTS
+    AUTOMATIC_REDIRECTS
 }
