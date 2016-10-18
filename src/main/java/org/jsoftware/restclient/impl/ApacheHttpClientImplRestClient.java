@@ -18,6 +18,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoftware.restclient.BaseRestClientCall;
@@ -59,15 +60,19 @@ public class ApacheHttpClientImplRestClient implements RestClient {
      * @param plugins plugins to be added
      */
     public ApacheHttpClientImplRestClient(RestClientFeature[] features, RestClientPlugin[] plugins) {
-        httpClient = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient").build();
+        HttpClientBuilder builder = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient");
         httpClientContext = HttpClientContext.create();
         Set<RestClientFeature> f = new HashSet<>(Arrays.asList(features));
         if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
+        if (f.contains(RestClientFeature.IGNORE_REDIRECTS)) {
+            builder = builder.disableAutomaticRetries();
+        }
         if (plugins != null) {
             this.plugins = plugins;
         }
+        httpClient = builder.build();
     }
 
     @Override
