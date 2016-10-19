@@ -1,7 +1,10 @@
 package org.jsoftware.restclient.impl;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.ProtocolException;
+import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -11,6 +14,7 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -21,6 +25,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
 import org.jsoftware.restclient.BaseRestClientCall;
 import org.jsoftware.restclient.RestClient;
 import org.jsoftware.restclient.RestClientCall;
@@ -53,7 +58,16 @@ public class ApacheHttpClientImplRestClient implements RestClient {
     private final CloseableHttpClient httpClient;
     private final HttpClientContext httpClientContext;
     private RestClientPlugin[] plugins = new RestClientPlugin[0];
-
+    private static class NoneRedirectStrategy implements RedirectStrategy {
+        @Override
+        public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+            return false;
+        }
+        @Override
+        public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+            throw new AssertionError("Should be never called!");
+        }
+    }
 
     /**
      * @param features features to enable
@@ -67,7 +81,7 @@ public class ApacheHttpClientImplRestClient implements RestClient {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
         if (! f.contains(RestClientFeature.AUTOMATIC_REDIRECTS)) {
-            builder = builder.disableAutomaticRetries();
+            builder.setRedirectStrategy(new NoneRedirectStrategy());
         }
         if (plugins != null) {
             this.plugins = plugins;
