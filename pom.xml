@@ -4,7 +4,7 @@
 
     <groupId>org.jsoftware</groupId>
     <artifactId>rest-client</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
 
     <parent>
         <groupId>org.jsoftware</groupId>
@@ -77,7 +77,7 @@
         <url>https://github.com/m-szalik/rest-client.git</url>
         <connection>scm:git:git@github.com:m-szalik/rest-client.git</connection>
         <developerConnection>scm:git:git@github.com:m-szalik/rest-client.git</developerConnection>
-      <tag>rest-client-1.5</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <issueManagement>
