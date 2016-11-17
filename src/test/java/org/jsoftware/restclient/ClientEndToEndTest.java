@@ -3,22 +3,25 @@ package org.jsoftware.restclient;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
-import org.jsoftware.restclient.impl.ApacheHttpClientImplRestClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  */
@@ -28,7 +31,15 @@ public class ClientEndToEndTest {
 
     @Before
     public void setUp() throws Exception {
-        client = new ApacheHttpClientImplRestClient(new RestClientFeature[]{}, new RestClientPlugin[] {});
+        RestClientFactory factory = new RestClientFactory();
+        client = factory.newRestClient();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (client != null) {
+            client.close();
+        }
     }
 
     @Test
@@ -164,7 +175,7 @@ public class ClientEndToEndTest {
         BinaryContent binaryContent = resp.getBinaryContent();
         InputStream ins = binaryContent.getStream();
         assertNotNull(ins);
-        IOUtils.toString(ins);
+        IOUtils.toString(ins, Charset.forName("UTF-8"));
         IOUtils.closeQuietly(ins);
     }
 
@@ -193,4 +204,14 @@ public class ClientEndToEndTest {
         client.post(TEST_URL).body("body", null).execute();
     }
 
+    @Test
+    public void testTimeout() throws Exception {
+        RestClientFactory factory = new RestClientFactory().timeout(500);
+        try(RestClient client = factory.newRestClient()) {
+            client.get("http://jsoftware.org/wp-content/rest-client-test.php").execute();
+            fail("Exception expected");
+        } catch (IOException ex) {
+            // ok
+        }
+    }
 }

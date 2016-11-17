@@ -23,7 +23,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.jsoftware.restclient.BaseRestClientCall;
@@ -58,6 +57,8 @@ public class ApacheHttpClientImplRestClient implements RestClient {
     private final CloseableHttpClient httpClient;
     private final HttpClientContext httpClientContext;
     private RestClientPlugin[] plugins = new RestClientPlugin[0];
+
+
     private static class NoneRedirectStrategy implements RedirectStrategy {
         @Override
         public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
@@ -73,14 +74,13 @@ public class ApacheHttpClientImplRestClient implements RestClient {
      * @param features features to enable
      * @param plugins plugins to be added
      */
-    public ApacheHttpClientImplRestClient(RestClientFeature[] features, RestClientPlugin[] plugins) {
-        HttpClientBuilder builder = HttpClients.custom().setMaxConnPerRoute(50).setMaxConnTotal(200).setUserAgent("org.jsoftware.restClient");
+    public ApacheHttpClientImplRestClient(RestClientFeature[] features, RestClientPlugin[] plugins, HttpClientBuilder builder) {
         httpClientContext = HttpClientContext.create();
         Set<RestClientFeature> f = new HashSet<>(Arrays.asList(features));
         if (f.contains(RestClientFeature.ENABLE_COOKIES)) {
             httpClientContext.setCookieStore(new BasicCookieStore());
         }
-        if (! f.contains(RestClientFeature.AUTOMATIC_REDIRECTS)) {
+        if (! f.contains(RestClientFeature.AUTOMATIC_REDIRECTS)) { // fixme - this makes modification in factory property "builder"
             builder.setRedirectStrategy(new NoneRedirectStrategy());
         }
         if (plugins != null) {
