@@ -23,7 +23,7 @@ RestClient that parses:
 <dependency>
     <groupId>org.jsoftware</groupId>
     <artifactId>rest-client</artifactId>
-    <version>1.3</version>
+    <version>1.5</version>
 </dependency>
 ```
 
